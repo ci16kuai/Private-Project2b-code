@@ -14,9 +14,23 @@ public class BattleScreen extends Screen {
 //    public ArrayList<Projectile>;
 //    public ArrayList<Explosion>;
 
+    // UI
+    private UI ui;
+    private int lives;
+    private int wave;
+    private int score;
+
+    private int frameCount;
+
     public BattleScreen(Properties gameProps) {
         super(gameProps);
+
+        // initialize battle screen objects
         initialise_objects();
+
+        // initialize information UI
+        ui =  new UI(gameProps);
+
     }
 
     @Override
@@ -29,6 +43,10 @@ public class BattleScreen extends Screen {
     public void draw() {
         //draw player
         player.draw();
+
+        //draw UI
+        lives = player.getLives();
+        ui.draw(lives, wave, score);
     }
 
     public void initialise_objects(){
@@ -37,7 +55,8 @@ public class BattleScreen extends Screen {
         double x = ShadowAliens.screenWidth/2;
         double y = Double.parseDouble(gameProps.getProperty("player.posY"));
         int speed = Integer.parseInt(gameProps.getProperty("player.speed"));
-        player = new Player(x,y,image,speed);
+        int lives = Integer.parseInt(gameProps.getProperty("player.initialLives"));
+        player = new Player(x,y,image,speed,lives);
 
         //initialize enemy
 

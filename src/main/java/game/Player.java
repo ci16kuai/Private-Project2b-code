@@ -7,14 +7,14 @@ import bagel.Keys;
 public class Player extends Object{
 
     public int speed;
-//    public int lives;
+    public int lives;
 //    public int shootCooldown;
 //    public int cooldownTime;
 
-    public Player(double x, double y, Image image, int speed) {
+    public Player(double x, double y, Image image, int speed, int lives) {
         super(x, y, image);
         this.speed = speed;
-//        this.lives = lives;
+        this.lives = lives;
 //        this.shootCooldown = shootCooldown;
 //        this.cooldownTime = cooldownTime;
     }
@@ -37,4 +37,10 @@ public class Player extends Object{
             }
         }
     }
+
+    // get the current player lives
+    public int getLives() {
+        return lives;
+    }
+
 }
