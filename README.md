@@ -88,3 +88,4 @@ The implemented design gives 'UI' responsibility for drawing the wave, score, pl
 
 An alternative design would be to draw all UI elements directly in 'BattleScreen.draw()'. That would work, but it would mix game state logic with formatting and text positioning. The current design is better because 'BattleScreen' can focus on gameplay control, while 'UI' focuses only on presentation.
 
+"# yzhang6992-project2-2026-sm1" 
