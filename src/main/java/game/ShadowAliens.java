@@ -19,6 +19,7 @@ public class ShadowAliens extends AbstractGame {
     public BattleScreen battleScreen;
     public PauseScreen pauseScreen;
     public Screen currentScreen;
+    private UI ui;
 
     public ShadowAliens(Properties gameProps) {
         super(Integer.parseInt(gameProps.getProperty("window.width")),
@@ -36,8 +37,9 @@ public class ShadowAliens extends AbstractGame {
         Window.setClearColour(r,g,b);
 
         battleScreen = new BattleScreen(gameProps);
-        pauseScreen = new PauseScreen(gameProps);
+        pauseScreen = new PauseScreen(gameProps, battleScreen);
         currentScreen = battleScreen;
+        ui = new UI(gameProps);
 
     }
 
@@ -48,6 +50,10 @@ public class ShadowAliens extends AbstractGame {
     @Override
     protected void update(Input input) {
         currentScreen.update(input);
+        switch_mode(input);
+        if (currentScreen instanceof PauseScreen){
+            ui.draw_pause(1);
+        }
     }
 
 

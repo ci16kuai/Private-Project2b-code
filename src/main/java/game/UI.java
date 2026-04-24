@@ -5,6 +5,7 @@ import bagel.Font;
 import bagel.Image;
 import bagel.util.Colour;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 public class UI {
@@ -13,19 +14,29 @@ public class UI {
     private final Font textfont;
     private final Colour textcolour;
 
-    private String waveText;
-    private double waveX;
-    private double waveY;
+    private final String waveText;
+    private final double waveX;
+    private final double waveY;
 
-    private String scoreText;
-    private double scoreX;
-    private double scoreY;
+    private final String scoreText;
+    private final double scoreX;
+    private final double scoreY;
 
-    private Image playerLifeImage;
-    private double playerLivesStartPosition;
-    private double playerLivesStartX;
-    private double playerLivesStartY;
-    private int playerLivesGap;
+    private final Image playerLifeImage;
+    private final double playerLivesStartX;
+    private final double playerLivesStartY;
+    private final int playerLivesGap;
+
+    private final String pausedTitleText;
+    private final int pausedTitleSize;
+    private final Font pausedTitleFont;
+    private final int pausedTitlePosY;
+    private final ArrayList<String> controlListTextSplit;
+    private final int controlsListStartPosY;
+    private final int controlsListRowGap;
+    private final String timescaleText;
+    private final double timeScalePosX;
+    private final double timeScalePosY;
 
     public UI(Properties gameProps) {
 
@@ -53,7 +64,25 @@ public class UI {
         playerLivesStartX = Double.parseDouble(playerLivesStartPosition[0]);
         playerLivesStartY = Double.parseDouble(playerLivesStartPosition[1]);
         playerLivesGap = Integer.parseInt(gameProps.getProperty("playerLives.gap"));
+
+        //pause mode:
+        pausedTitleText = gameProps.getProperty("pausedTitle.text");
+        pausedTitleSize = Integer.parseInt(gameProps.getProperty("pausedTitle.size"));
+        pausedTitleFont = new Font(gameProps.getProperty("text.font"), pausedTitleSize);
+        pausedTitlePosY = Integer.parseInt(gameProps.getProperty("pausedTitle.posY"));
+        controlListTextSplit = new ArrayList<>();
+        String[] controls = gameProps.getProperty("controlsList.text").split("[,]");
+        for (String control: controls){
+            controlListTextSplit.add(control.trim());
+        }
+        controlsListStartPosY = Integer.parseInt(gameProps.getProperty("controlsList.startPosY"));
+        controlsListRowGap = Integer.parseInt(gameProps.getProperty("controlsList.rowGap"));
+        timescaleText = gameProps.getProperty("timescale.text");
+        String[] timeScalePos = gameProps.getProperty("timescale.pos").split(",");
+        timeScalePosX = Double.parseDouble(timeScalePos[0]);
+        timeScalePosY = Double.parseDouble(timeScalePos[1]);
     }
+
 
     public void draw(int lives, int wave, int score) {
         // draw live;
@@ -65,5 +94,27 @@ public class UI {
         // draw score;
         textfont.drawString(String.format("%s %d", scoreText, score), scoreX, scoreY, new DrawOptions().setBlendColour(textcolour));
 
+    }
+
+    public void draw_pause(double timeScale){
+        DrawOptions options = new DrawOptions().setBlendColour(textcolour);
+
+        //draw title
+        drawCentreText(pausedTitleText,pausedTitleFont,pausedTitlePosY,options);
+
+        //draw controls list
+        for (int i = 0; i < controlListTextSplit.size(); i++) {
+            double y = controlsListStartPosY + i * controlsListRowGap;
+            drawCentreText(controlListTextSplit.get(i), textfont, y, options);
+        }
+
+        //draw timescale
+        String timeScaleStr = String.format("%s %.1f", timescaleText, timeScale);
+        textfont.drawString(timeScaleStr, timeScalePosX, timeScalePosY, options);
+    }
+
+    private void drawCentreText(String text, Font font, double y, DrawOptions options){
+        double x = (ShadowAliens.screenWidth/2 - font.getWidth(text)/2);
+        font.drawString(text, x, y, options);
     }
 }
