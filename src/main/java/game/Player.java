@@ -8,19 +8,24 @@ public class Player extends Object{
 
     public int speed;
     public int lives;
-//    public int shootCooldown;
-//    public int cooldownTime;
+    public int shootCooldown;
+    public int coolDownLeft = 0;
+    public boolean canShoot = false;
 
-    public Player(double x, double y, Image image, int speed, int lives) {
+    public Player(double x, double y, Image image, int speed, int lives, int  shootCooldown) {
         super(x, y, image);
         this.speed = speed;
         this.lives = lives;
-//        this.shootCooldown = shootCooldown;
-//        this.cooldownTime = cooldownTime;
+        this.shootCooldown = shootCooldown;
     }
 
-    public void update(Input input){
+    public boolean update(Input input){
+        // press move button:
         movement(input);
+
+        // press space button:
+        updateCooldown();
+        return shoot(input);
     }
 
     public void movement(Input input){
@@ -36,6 +41,24 @@ public class Player extends Object{
                 x = ShadowAliens.screenWidth - (image.getWidth() / 2) - 1;
             }
         }
+    }
+
+    public void updateCooldown(){
+            if (coolDownLeft > 0){
+                coolDownLeft--;
+            }
+            canShoot = (coolDownLeft == 0);
+    }
+
+    public boolean shoot(Input input){
+        // if pressed SPACE:
+        if (input.wasPressed(Keys.SPACE) && canShoot){
+            //reset cooldown and cannot shoot;
+            canShoot = false;
+            coolDownLeft  = shootCooldown;
+            return true;
+        }
+        return false;
     }
 
     // get the current player lives
