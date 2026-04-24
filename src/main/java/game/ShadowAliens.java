@@ -51,7 +51,7 @@ public class ShadowAliens extends AbstractGame {
     protected void update(Input input) {
         currentScreen.update(input);
         switch_mode(input);
-        //if the game is paused:
+        //if the game is paused, draw pause UI
         if (currentScreen instanceof PauseScreen){
             ui.draw_pause(battleScreen.calTimeScale());
         }

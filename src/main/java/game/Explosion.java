@@ -4,8 +4,8 @@ import bagel.Image;
 
 public class Explosion extends Object{
 
-    private int explosionDuration;
-    private double timer;
+    private final int explosionDuration;
+    private double timer; // record the time of duration
 
     public Explosion(double x, double y, Image explosionImage, int explosionDuration) {
         super(x, y, explosionImage);

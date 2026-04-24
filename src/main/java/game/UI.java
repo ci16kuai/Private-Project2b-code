@@ -85,7 +85,7 @@ public class UI {
 
 
     public void draw(int lives, int wave, int score) {
-        // draw live;
+        // draw player lives;
         for (int i = 0; i < lives; i++){
             playerLifeImage.draw(playerLivesStartX + i * playerLivesGap, playerLivesStartY);
         }
@@ -113,6 +113,7 @@ public class UI {
         textfont.drawString(timeScaleStr, timeScalePosX, timeScalePosY, options);
     }
 
+    // make the font at the center
     private void drawCentreText(String text, Font font, double y, DrawOptions options){
         double x = (ShadowAliens.screenWidth/2 - font.getWidth(text)/2);
         font.drawString(text, x, y, options);

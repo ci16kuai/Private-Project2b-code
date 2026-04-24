@@ -24,16 +24,19 @@ public class Player extends Object{
         movement(input, timeScale);
         // press space button:
         updateCooldown();
-        return shoot(input);
+        return shoot(input); //whether successfully shoot
     }
 
     public void movement(Input input, double timeScale){
+        // move left if press or hold A
         if ((input.wasPressed(Keys.A) || input.isDown(Keys.A))){
             x  -= speed * timeScale;
             if (x < 0 + image.getWidth()/2){
                 x = 0  + image.getWidth()/2;
             }
         }
+
+        // move right if press or hold A
         if ((input.wasPressed(Keys.D) || input.isDown(Keys.D))){
             x += speed * timeScale;
             if (x >= ShadowAliens.screenWidth - image.getWidth()/2 - 1) {

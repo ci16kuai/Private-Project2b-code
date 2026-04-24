@@ -203,6 +203,7 @@ public class BattleScreen extends Screen {
         speedLevel --;
     }
 
+    //calculate the timeScale based on speedLevel
     public double calTimeScale(){
         if (speedLevel > 0){
             return speedLevel+1;

@@ -15,7 +15,6 @@ public class PauseScreen extends Screen {
 
     @Override
     public void update(Input input) {
-
         draw();
     }
 
