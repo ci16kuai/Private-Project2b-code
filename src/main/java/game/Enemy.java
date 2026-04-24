@@ -6,7 +6,7 @@ import bagel.Input;
 public class Enemy extends Object{
 
     private int speed;
-    private int arrivalTime;
+    protected int arrivalTime;
 
     public Enemy(double x, double y, Image image, int speed, int arrivalTime) {
         super(x, y, image);
@@ -24,7 +24,7 @@ public class Enemy extends Object{
 
         // if enemy is outside screen:
         if (y >= ShadowAliens.screenHeight + image.getHeight()/2){
-            active = false;
+            deactive();
         }
     }
 

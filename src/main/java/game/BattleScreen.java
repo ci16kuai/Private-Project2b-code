@@ -2,6 +2,7 @@ package game;
 
 import bagel.Image;
 import bagel.Input;
+import bagel.Window;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -11,12 +12,12 @@ public class BattleScreen extends Screen {
     private Player player;
     public ArrayList<Enemy> enemies;
     public ArrayList<Projectile> projectiles;
-//    public ArrayList<Explosion>;
+    public ArrayList<Explosion> explosions;
 
     // UI
     private UI ui;
     private int lives;
-    private int wave;
+    private int wave = 1;
     private int score;
 
     private int frameCount;
@@ -36,7 +37,7 @@ public class BattleScreen extends Screen {
     @Override
     public void update(Input input) {
         // update player status
-        if (player.update(input)){
+        if (player.update(input)){  //returned 1 = player pressed SPACE
             Projectile projectile =  new Projectile(
                     player.x,
                     player.y,
@@ -53,6 +54,14 @@ public class BattleScreen extends Screen {
             projectile.update();
         }
 
+        //update explosions
+        for (Explosion  explosion: explosions){
+            explosion.update();
+        }
+
+        // check collision
+        checkCollisions();
+
         // delete inactive objects
         deleteInactiveObjects();
 
@@ -65,23 +74,28 @@ public class BattleScreen extends Screen {
         //draw player
         player.draw();
 
-        //draw projectiles
+        //*draw projectiles
         for (Projectile projectile : projectiles) {
             projectile.draw();
         }
 
-        //draw enemies
+        //*draw enemies
         for (Enemy enemy : enemies) {
             enemy.draw();
         }
 
-        //draw UI
+        //*draw explosions
+        for (Explosion explosion : explosions) {
+            explosion.draw();
+        }
+
+        //*draw UI
         lives = player.getLives();
         ui.draw(lives, wave, score);
     }
 
     public void initialise_objects(){
-        //initialize player
+        //*initialize player
         Image playerImage = new Image(gameProps.getProperty("player.image"));
         double PlayerX = ShadowAliens.screenWidth/2;
         double PlayerY = Double.parseDouble(gameProps.getProperty("player.posY"));
@@ -90,10 +104,11 @@ public class BattleScreen extends Screen {
         int shootCooldown = Integer.parseInt(gameProps.getProperty("player.shootCooldown"));
         player = new Player(PlayerX, PlayerY, playerImage, PlayerSpeed, initial_lives, shootCooldown);
 
-        //initialize projectile
-        projectiles = new ArrayList<Projectile>();
+        //*initialize projectile and explosions
+        projectiles = new ArrayList<>();
+        explosions = new ArrayList<>();
 
-        //initialize enemy
+        //*initialize enemy
          enemies = new ArrayList<>();
          Image enemyImage = new Image(gameProps.getProperty("enemy.image"));
 
@@ -108,11 +123,50 @@ public class BattleScreen extends Screen {
              enemies.add(enemy); // add it to arraylist
              i++;
          }
+    }
 
+
+    public void checkCollisions(){
+        // check if player collide with enemies
+        for (Enemy enemy: enemies){
+           if(enemy.isActive() && (frameCount >= enemy.arrivalTime)) {
+                if (enemy.collidesWith(player)){ // if collides
+                    // enemy inactive
+                    enemy.deactive();
+                    // player lose 1 live
+                    player.lives -= 1;
+
+                    if (player.lives == 0) {
+                        Window.close();
+                    }
+                }
+            }
+        }
+        // check if enemies collide with projectiles
+        for (Enemy enemy: enemies){
+            for (Projectile projectile: projectiles){
+                if(enemy.isActive() && (frameCount >= enemy.arrivalTime)) {
+                    if (enemy.collidesWith(projectile)){ // if collides
+                        // enemy inactive
+                        enemy.deactive();
+                        // projectile inactive
+                        projectile.deactive();
+                        // score add
+                        score += 1;
+                        // explosion occurs
+                        Image explosionImage =  new Image(gameProps.getProperty("explosion.image"));
+                        int explosionDuration =  Integer.parseInt(gameProps.getProperty("explosion.duration"));
+                        Explosion explosion = new Explosion(enemy.x, enemy.y, explosionImage, explosionDuration);
+                        explosions.add(explosion); // add explosion to explosions array list
+                    }
+                }
+            }
+        }
     }
 
     public void deleteInactiveObjects(){
 
+        // within enemies size, remove inactive objects
         for (int i = 0; i < enemies.size(); i++){
             if (!enemies.get(i).active){
                 enemies.remove(i);
@@ -120,9 +174,18 @@ public class BattleScreen extends Screen {
             }
         }
 
+        // within projectiles size, remove inactive objects
         for (int i = 0; i < projectiles.size(); i++){
             if (!projectiles.get(i).active){
                 projectiles.remove(i);
+                i--;
+            }
+        }
+
+        // remove explosions
+        for (int i = 0; i < explosions.size(); i++){
+            if (!explosions.get(i).active){
+                explosions.remove(i);
                 i--;
             }
         }

@@ -1,5 +1,6 @@
 package game;
 
+import bagel.DrawOptions;
 import bagel.Font;
 import bagel.Image;
 import bagel.util.Colour;
@@ -60,9 +61,9 @@ public class UI {
             playerLifeImage.draw(playerLivesStartX + i * playerLivesGap, playerLivesStartY);
         }
         // draw wave;
-        textfont.drawString(String.format("%s %d", waveText, wave), waveX, waveY);
+        textfont.drawString(String.format("%s %d", waveText, wave), waveX, waveY, new DrawOptions().setBlendColour(textcolour));
         // draw score;
-        textfont.drawString(String.format("%s %d", scoreText, score), scoreX, scoreY);
+        textfont.drawString(String.format("%s %d", scoreText, score), scoreX, scoreY, new DrawOptions().setBlendColour(textcolour));
 
     }
 }

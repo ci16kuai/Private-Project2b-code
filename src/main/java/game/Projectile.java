@@ -16,7 +16,7 @@ public class Projectile extends Object{
 
         // if projectile is outside screen:
         if(y < 0 - image.getHeight()/2){
-            active = false;
+            deactive();
         }
     }
 }
