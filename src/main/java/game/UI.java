@@ -109,7 +109,7 @@ public class UI {
         }
 
         //draw timescale
-        String timeScaleStr = String.format("%s %.1f", timescaleText, timeScale);
+        String timeScaleStr = String.format("%s %s", timescaleText, timeScale );
         textfont.drawString(timeScaleStr, timeScalePosX, timeScalePosY, options);
     }
 

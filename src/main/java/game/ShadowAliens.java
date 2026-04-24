@@ -51,8 +51,29 @@ public class ShadowAliens extends AbstractGame {
     protected void update(Input input) {
         currentScreen.update(input);
         switch_mode(input);
+        //if the game is paused:
         if (currentScreen instanceof PauseScreen){
-            ui.draw_pause(1);
+            ui.draw_pause(battleScreen.calTimeScale());
+        }
+
+        //I: Dev mode
+        if (input.wasPressed(Keys.I)){
+            battleScreen.switchDev();
+        }
+
+        //R: reset
+        if (input.wasPressed(Keys.R)){
+            resetGame();
+        }
+
+        //G: speedUp
+        if (input.wasPressed(Keys.G)){
+            battleScreen.speedup();
+        }
+
+        //F: speedDown
+        if (input.wasPressed(Keys.F)){
+            battleScreen.speedDown();
         }
     }
 
@@ -73,6 +94,12 @@ public class ShadowAliens extends AbstractGame {
                 currentScreen = battleScreen;
             }
         }
+    }
+
+    private void resetGame(){
+        battleScreen = new BattleScreen(gameProps);
+        pauseScreen = new PauseScreen(gameProps, battleScreen);
+        currentScreen = battleScreen;
     }
 }
 

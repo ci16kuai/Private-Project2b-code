@@ -19,24 +19,23 @@ public class Player extends Object{
         this.shootCooldown = shootCooldown;
     }
 
-    public boolean update(Input input){
+    public boolean update(Input input, double timeScale){
         // press move button:
-        movement(input);
-
+        movement(input, timeScale);
         // press space button:
         updateCooldown();
         return shoot(input);
     }
 
-    public void movement(Input input){
+    public void movement(Input input, double timeScale){
         if ((input.wasPressed(Keys.A) || input.isDown(Keys.A))){
-            x  -= speed;
+            x  -= speed * timeScale;
             if (x < 0 + image.getWidth()/2){
                 x = 0  + image.getWidth()/2;
             }
         }
         if ((input.wasPressed(Keys.D) || input.isDown(Keys.D))){
-            x += speed;
+            x += speed * timeScale;
             if (x >= ShadowAliens.screenWidth - image.getWidth()/2 - 1) {
                 x = ShadowAliens.screenWidth - (image.getWidth() / 2) - 1;
             }

@@ -5,7 +5,7 @@ import bagel.Image;
 public class Explosion extends Object{
 
     private int explosionDuration;
-    private int timer;
+    private double timer;
 
     public Explosion(double x, double y, Image explosionImage, int explosionDuration) {
         super(x, y, explosionImage);
@@ -13,8 +13,9 @@ public class Explosion extends Object{
         timer = explosionDuration;
     }
 
-    public void update(){
-        timer --;
+    public void update(double timeScale){
+
+        timer = timer - (1 * timeScale);
         if (timer <= 0){
             deactive();
         }

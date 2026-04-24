@@ -11,8 +11,8 @@ public class Projectile extends Object{
         this.speed = speed;
     }
 
-    public void update(){
-        y -= speed;
+    public void update(double timesScale){
+        y -= speed * timesScale;
 
         // if projectile is outside screen:
         if(y < 0 - image.getHeight()/2){

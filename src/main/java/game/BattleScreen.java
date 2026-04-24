@@ -18,9 +18,12 @@ public class BattleScreen extends Screen {
     private UI ui;
     private int lives;
     private int wave = 1;
-    private int score;
-
+    private int score = 0;
     private int frameCount;
+    public double timeScale = 1;
+
+    private boolean DevMode = false; //Dev mode status
+    private int speedLevel = 0;
 
     public BattleScreen(Properties gameProps) {
         super(gameProps);
@@ -30,14 +33,13 @@ public class BattleScreen extends Screen {
 
         // initialize information UI
         ui =  new UI(gameProps);
-
-        // initialize game
     }
 
     @Override
     public void update(Input input) {
         // update player status
-        if (player.update(input)){  //returned 1 = player pressed SPACE
+        double currentTimeScale = calTimeScale();
+        if (player.update(input, currentTimeScale)){  //returned 1 = player pressed SPACE
             Projectile projectile =  new Projectile(
                     player.x,
                     player.y,
@@ -51,12 +53,12 @@ public class BattleScreen extends Screen {
         }
         // update projectiles
         for (Projectile projectile : projectiles){
-            projectile.update();
+            projectile.update(currentTimeScale);
         }
 
         //update explosions
-        for (Explosion  explosion: explosions){
-            explosion.update();
+        for (Explosion explosion: explosions){
+            explosion.update(currentTimeScale);
         }
 
         // check collision
@@ -133,8 +135,10 @@ public class BattleScreen extends Screen {
                 if (enemy.collidesWith(player)){ // if collides
                     // enemy inactive
                     enemy.deactive();
-                    // player lose 1 live
-                    player.lives -= 1;
+                    //if not in Dev mode, player lose 1 live
+                    if (!DevMode){
+                        player.lives -= 1;
+                    }
 
                     if (player.lives == 0) {
                         Window.close();
@@ -189,5 +193,27 @@ public class BattleScreen extends Screen {
                 i--;
             }
         }
+    }
+
+    public void speedup(){
+        speedLevel ++;
+    }
+
+    public void speedDown(){
+        speedLevel --;
+    }
+
+    public double calTimeScale(){
+        if (speedLevel > 0){
+            return speedLevel+1;
+        }
+        if (speedLevel < 0){
+            return 1.0 / (1-speedLevel);
+        }
+        return 1.0;
+    }
+
+    public void switchDev(){
+        DevMode = !DevMode;
     }
 }
