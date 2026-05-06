@@ -10,9 +10,9 @@ import java.util.Properties;
 public class BattleScreen extends Screen {
 
     private Player player;
-    public ArrayList<Enemy> enemies;
-    public ArrayList<Projectile> projectiles;
-    public ArrayList<Explosion> explosions;
+    private ArrayList<Enemy> enemies;
+    private ArrayList<Projectile> projectiles;
+    private ArrayList<Explosion> explosions;
 
     // UI
     private UI ui;
@@ -20,7 +20,7 @@ public class BattleScreen extends Screen {
     private int wave = 1;
     private int score = 0;
     private int frameCount;
-    public double timeScale = 1;
+    protected double timeScale = 1;
 
     private boolean DevMode = false; //Dev mode status
     private int speedLevel = 0;

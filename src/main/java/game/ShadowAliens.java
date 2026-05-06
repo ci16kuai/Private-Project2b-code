@@ -16,9 +16,9 @@ public class ShadowAliens extends AbstractGame {
     public static double screenWidth;
     public static double screenHeight;
 
-    public BattleScreen battleScreen;
-    public PauseScreen pauseScreen;
-    public Screen currentScreen;
+    private BattleScreen battleScreen;
+    private PauseScreen pauseScreen;
+    private Screen currentScreen;
     private UI ui;
 
     public ShadowAliens(Properties gameProps) {

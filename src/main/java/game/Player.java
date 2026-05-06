@@ -6,11 +6,11 @@ import bagel.Keys;
 
 public class Player extends Object{
 
-    public int speed;
-    public int lives;
-    public int shootCooldown;
-    public int coolDownLeft = 0;
-    public boolean canShoot = false;
+    private final int speed;
+    protected int lives;
+    private final int shootCooldown;
+    private int coolDownLeft = 0;
+    private boolean canShoot = false;
 
     public Player(double x, double y, Image image, int speed, int lives, int  shootCooldown) {
         super(x, y, image);
