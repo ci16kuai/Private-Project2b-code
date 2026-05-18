@@ -2,7 +2,7 @@ package game;
 
 import bagel.Image;
 
-public class Projectile extends Object{
+public class Projectile extends GameObject {
 
     private final double speed;
 
@@ -11,11 +11,11 @@ public class Projectile extends Object{
         this.speed = speed;
     }
 
-    public void update(double timesScale){
-        y -= speed * timesScale;
+    public void update(double timeScale) {
+        y -= speed * timeScale;
 
-        // if projectile is outside screen:
-        if(y < 0 - image.getHeight()/2){
+        // if projectile is outside screen, deactivate
+        if (y < 0 - image.getHeight() / 2) {
             deactive();
         }
     }

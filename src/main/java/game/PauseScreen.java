@@ -20,8 +20,7 @@ public class PauseScreen extends Screen {
 
     @Override
     public void draw() {
-        // the pause screen should be same as battle screen at the moment paused
+        // the pause screen shows the battle scene frozen underneath the pause overlay
         battleScreen.draw();
     }
-
 }

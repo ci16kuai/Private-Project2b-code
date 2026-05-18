@@ -2,10 +2,10 @@ package game;
 
 import bagel.Image;
 
-public class Explosion extends Object{
+public class Explosion extends GameObject {
 
     private final int explosionDuration;
-    private double timer; // record the time of duration
+    private double timer;
 
     public Explosion(double x, double y, Image explosionImage, int explosionDuration) {
         super(x, y, explosionImage);
@@ -13,10 +13,9 @@ public class Explosion extends Object{
         timer = explosionDuration;
     }
 
-    public void update(double timeScale){
-
+    public void update(double timeScale) {
         timer = timer - (1 * timeScale);
-        if (timer <= 0){
+        if (timer <= 0) {
             deactive();
         }
     }

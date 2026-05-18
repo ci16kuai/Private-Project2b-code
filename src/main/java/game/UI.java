@@ -10,9 +10,9 @@ import java.util.Properties;
 
 public class UI {
 
-    private final int textsize;
-    private final Font textfont;
-    private final Colour textcolour;
+    private final int textSize;
+    private final Font textFont;
+    private final Colour textColour;
 
     private final String waveText;
     private final double waveX;
@@ -44,10 +44,10 @@ public class UI {
         double r = Double.parseDouble(colour[0]);
         double g = Double.parseDouble(colour[1]);
         double b = Double.parseDouble(colour[2]);
-        textcolour = new Colour(r,g,b);
+        textColour = new Colour(r, g, b);
 
-        textsize = Integer.parseInt(gameProps.getProperty("text.size"));
-        textfont = new Font(gameProps.getProperty("text.font"), textsize);
+        textSize = Integer.parseInt(gameProps.getProperty("text.size"));
+        textFont = new Font(gameProps.getProperty("text.font"), textSize);
 
         waveText = gameProps.getProperty("wave.text");
         String[] wavePos = gameProps.getProperty("wave.pos").split(",");
@@ -65,14 +65,14 @@ public class UI {
         playerLivesStartY = Double.parseDouble(playerLivesStartPosition[1]);
         playerLivesGap = Integer.parseInt(gameProps.getProperty("playerLives.gap"));
 
-        //pause mode:
+        // pause mode
         pausedTitleText = gameProps.getProperty("pausedTitle.text");
         pausedTitleSize = Integer.parseInt(gameProps.getProperty("pausedTitle.size"));
         pausedTitleFont = new Font(gameProps.getProperty("text.font"), pausedTitleSize);
         pausedTitlePosY = Integer.parseInt(gameProps.getProperty("pausedTitle.posY"));
         controlListTextSplit = new ArrayList<>();
         String[] controls = gameProps.getProperty("controlsList.text").split("[,]");
-        for (String control: controls){
+        for (String control : controls) {
             controlListTextSplit.add(control.trim());
         }
         controlsListStartPosY = Integer.parseInt(gameProps.getProperty("controlsList.startPosY"));
@@ -83,39 +83,39 @@ public class UI {
         timeScalePosY = Double.parseDouble(timeScalePos[1]);
     }
 
-
     public void draw(int lives, int wave, int score) {
-        // draw player lives;
-        for (int i = 0; i < lives; i++){
+        // draw player lives
+        for (int i = 0; i < lives; i++) {
             playerLifeImage.draw(playerLivesStartX + i * playerLivesGap, playerLivesStartY);
         }
-        // draw wave;
-        textfont.drawString(String.format("%s %d", waveText, wave), waveX, waveY, new DrawOptions().setBlendColour(textcolour));
-        // draw score;
-        textfont.drawString(String.format("%s %d", scoreText, score), scoreX, scoreY, new DrawOptions().setBlendColour(textcolour));
-
+        // draw wave
+        textFont.drawString(String.format("%s %d", waveText, wave), waveX, waveY,
+                new DrawOptions().setBlendColour(textColour));
+        // draw score
+        textFont.drawString(String.format("%s %d", scoreText, score), scoreX, scoreY,
+                new DrawOptions().setBlendColour(textColour));
     }
 
-    public void draw_pause(double timeScale){
-        DrawOptions options = new DrawOptions().setBlendColour(textcolour);
+    public void drawPause(double timeScale) {
+        DrawOptions options = new DrawOptions().setBlendColour(textColour);
 
-        //draw title
-        drawCentreText(pausedTitleText,pausedTitleFont,pausedTitlePosY,options);
+        // draw title
+        drawCentreText(pausedTitleText, pausedTitleFont, pausedTitlePosY, options);
 
-        //draw controls list
+        // draw controls list
         for (int i = 0; i < controlListTextSplit.size(); i++) {
             double y = controlsListStartPosY + i * controlsListRowGap;
-            drawCentreText(controlListTextSplit.get(i), textfont, y, options);
+            drawCentreText(controlListTextSplit.get(i), textFont, y, options);
         }
 
-        //draw timescale
-        String timeScaleStr = String.format("%s %s", timescaleText, timeScale );
-        textfont.drawString(timeScaleStr, timeScalePosX, timeScalePosY, options);
+        // draw timescale
+        String timeScaleStr = String.format("%s %s", timescaleText, timeScale);
+        textFont.drawString(timeScaleStr, timeScalePosX, timeScalePosY, options);
     }
 
-    // make the font at the center
-    private void drawCentreText(String text, Font font, double y, DrawOptions options){
-        double x = (ShadowAliens.screenWidth/2 - font.getWidth(text)/2);
+    // draw text horizontally centred
+    private void drawCentreText(String text, Font font, double y, DrawOptions options) {
+        double x = (ShadowAliens.getScreenWidth() / 2 - font.getWidth(text) / 2);
         font.drawString(text, x, y, options);
     }
 }

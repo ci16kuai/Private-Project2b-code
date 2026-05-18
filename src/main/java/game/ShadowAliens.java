@@ -13,13 +13,13 @@ import java.util.Properties;
  */
 public class ShadowAliens extends AbstractGame {
     private static Properties gameProps;
-    public static double screenWidth;
-    public static double screenHeight;
+    private static double screenWidth;
+    private static double screenHeight;
+    private static UI ui;
 
-    private BattleScreen battleScreen;
-    private PauseScreen pauseScreen;
-    private Screen currentScreen;
-    private UI ui;
+    public BattleScreen battleScreen;
+    public PauseScreen pauseScreen;
+    public Screen currentScreen;
 
     public ShadowAliens(Properties gameProps) {
         super(Integer.parseInt(gameProps.getProperty("window.width")),
@@ -34,13 +34,14 @@ public class ShadowAliens extends AbstractGame {
         double r = Double.parseDouble(backgroundColors[0]);
         double g = Double.parseDouble(backgroundColors[1]);
         double b = Double.parseDouble(backgroundColors[2]);
-        Window.setClearColour(r,g,b);
+        Window.setClearColour(r, g, b);
+
+        // UI is instantiated once here and shared via static getter
+        ui = new UI(gameProps);
 
         battleScreen = new BattleScreen(gameProps);
         pauseScreen = new PauseScreen(gameProps, battleScreen);
         currentScreen = battleScreen;
-        ui = new UI(gameProps);
-
     }
 
     /**
@@ -50,56 +51,66 @@ public class ShadowAliens extends AbstractGame {
     @Override
     protected void update(Input input) {
         currentScreen.update(input);
-        switch_mode(input);
-        //if the game is paused, draw pause UI
-        if (currentScreen instanceof PauseScreen){
-            ui.draw_pause(battleScreen.calTimeScale());
+        switchMode(input);
+
+        // if the game is paused, draw pause UI
+        if (currentScreen instanceof PauseScreen) {
+            ui.drawPause(battleScreen.calTimeScale());
         }
 
-        //I: Dev mode
-        if (input.wasPressed(Keys.I)){
+        // I: Dev mode
+        if (input.wasPressed(Keys.I)) {
             battleScreen.switchDev();
         }
 
-        //R: reset
-        if (input.wasPressed(Keys.R)){
+        // R: reset
+        if (input.wasPressed(Keys.R)) {
             resetGame();
         }
 
-        //G: speedUp
-        if (input.wasPressed(Keys.G)){
-            battleScreen.speedup();
+        // G: speed up
+        if (input.wasPressed(Keys.G)) {
+            battleScreen.speedUp();
         }
 
-        //F: speedDown
-        if (input.wasPressed(Keys.F)){
+        // F: speed down
+        if (input.wasPressed(Keys.F)) {
             battleScreen.speedDown();
         }
     }
 
-
     public static void main(String[] args) {
-        Properties gameProps = IOUtils.readPropertiesFile(System.getProperty("gameData","gameData.properties"));
-        ShadowAliens game = new ShadowAliens(gameProps);
+        Properties props = IOUtils.readPropertiesFile(System.getProperty("gameData", "gameData.properties"));
+        ShadowAliens game = new ShadowAliens(props);
         game.run();
     }
 
-    public void switch_mode(Input input){
-
-        //switch Screen if  ESC is pressed;
-        if (input.wasPressed(Keys.ESCAPE)){
-            if (currentScreen instanceof BattleScreen){
+    public void switchMode(Input input) {
+        // switch Screen if ESC is pressed
+        if (input.wasPressed(Keys.ESCAPE)) {
+            if (currentScreen instanceof BattleScreen) {
                 currentScreen = pauseScreen;
-            }else if (currentScreen instanceof PauseScreen){
+            } else if (currentScreen instanceof PauseScreen) {
                 currentScreen = battleScreen;
             }
         }
     }
 
-    private void resetGame(){
+    private void resetGame() {
         battleScreen = new BattleScreen(gameProps);
         pauseScreen = new PauseScreen(gameProps, battleScreen);
         currentScreen = battleScreen;
     }
-}
 
+    public static double getScreenWidth() {
+        return screenWidth;
+    }
+
+    public static double getScreenHeight() {
+        return screenHeight;
+    }
+
+    public static UI getUI() {
+        return ui;
+    }
+}

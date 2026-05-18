@@ -1,11 +1,11 @@
 package game;
 
+import bagel.DrawOptions;
 import bagel.Image;
-import bagel.Input;
 
-public class Enemy extends Object{
+public class Enemy extends GameObject {
 
-    private int speed;
+    public int speed;
     protected int arrivalTime;
 
     public Enemy(double x, double y, Image image, int speed, int arrivalTime) {
@@ -14,18 +14,24 @@ public class Enemy extends Object{
         this.arrivalTime = arrivalTime;
     }
 
-    public void update(int frameCount){
-        // if the enemy is not arrived, return
-        if (frameCount < arrivalTime){
+    public void update(double frameCount, double timeScale) {
+        // if the enemy has not arrived yet, return
+        if (frameCount < arrivalTime) {
             return;
-        } else{  //if  arrived
-            y += speed;
+        } else {
+            // apply timeScale so game speed changes affect enemy movement
+            y += speed * timeScale;
         }
 
-        // if enemy is outside screen:
-        if (y >= ShadowAliens.screenHeight + image.getHeight()/2){
+        // if enemy is outside screen, deactivate
+        if (y >= ShadowAliens.getScreenHeight() + image.getHeight() / 2) {
             deactive();
         }
     }
 
+    @Override
+    public void draw() {
+        // rotate 180 degrees so the enemy ship faces downward
+        image.draw(x, y, new DrawOptions().setRotation(Math.PI));
+    }
 }
