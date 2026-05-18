@@ -13,6 +13,7 @@ public class BattleScreen extends Screen {
     public ArrayList<Enemy> enemies;
     public ArrayList<Projectile> projectiles;
     public ArrayList<Explosion> explosions;
+    public ArrayList<Powerup> powerups;
 
     // UI
     private int lives;
@@ -21,7 +22,7 @@ public class BattleScreen extends Screen {
     private double frameCount;
     public double timeScale = 1.0;
 
-    private boolean devMode = false;
+    private boolean InvMode = false;
     private int speedLevel = 0;
 
     public BattleScreen(Properties gameProps) {
@@ -47,9 +48,15 @@ public class BattleScreen extends Screen {
         for (Enemy enemy : enemies) {
             enemy.update(frameCount, currentTimeScale);
         }
+
         // update projectiles
         for (Projectile projectile : projectiles) {
             projectile.update(currentTimeScale);
+        }
+
+        // update powerups
+        for (Powerup powerup : powerups) {
+            powerup.update(currentTimeScale);
         }
 
         // update explosions
@@ -67,19 +74,25 @@ public class BattleScreen extends Screen {
         frameCount += currentTimeScale;
     }
 
+
     @Override
     public void draw() {
         // draw player
         player.draw();
+
+        // draw enemies
+        for (Enemy enemy : enemies) {
+            enemy.draw();
+        }
 
         // draw projectiles
         for (Projectile projectile : projectiles) {
             projectile.draw();
         }
 
-        // draw enemies
-        for (Enemy enemy : enemies) {
-            enemy.draw();
+        // draw powerups
+        for (Powerup powerup : powerups) {
+            powerup.draw();
         }
 
         // draw explosions
@@ -100,7 +113,8 @@ public class BattleScreen extends Screen {
         int playerSpeed = Integer.parseInt(gameProps.getProperty("player.speed"));
         int initialLives = Integer.parseInt(gameProps.getProperty("player.initialLives"));
         int shootCooldown = Integer.parseInt(gameProps.getProperty("player.shootCooldown"));
-        player = new Player(playerX, playerY, playerImage, playerSpeed, initialLives, shootCooldown);
+        int hitInvincibilityTime = Integer.parseInt(gameProps.getProperty("player.hitInvincibilityTime"));
+        player = new Player(playerX, playerY, playerImage, playerSpeed, initialLives, shootCooldown, hitInvincibilityTime);
 
         // initialize projectile and explosions
         projectiles = new ArrayList<>();
@@ -121,6 +135,31 @@ public class BattleScreen extends Screen {
             enemies.add(enemy);
             i++;
         }
+
+        int j = 0;
+        while (gameProps.getProperty(String.format("wave.1.powerup.%d.type", j)) != null) {
+            String type = gameProps.getProperty(String.format("wave.1.powerup.%d.type", j));
+            int arrivalTime = Integer.parseInt(gameProps.getProperty(String.format("wave.1.powerup.%d.arrivalTime", j)));
+            double posX = Double.parseDouble(gameProps.getProperty(String.format("wave.1.powerup.%d.posX", j)));
+
+            Image image = new Image(gameProps.getProperty("powerup." + type + ".image"));
+            double speed = Double.parseDouble(gameProps.getProperty("powerup." + type + ".movementSpeed"));
+            String durationStr = gameProps.getProperty("powerup." + type + ".duration");
+            int duration = (durationStr != null) ? Integer.parseInt(durationStr) : 0;
+
+            Powerup p = switch (type) {
+                case "shield" -> new ShieldPowerup(posX, 0, image, speed, duration);
+                case "life" -> new LifePowerup(posX, 0, image, speed, duration);
+                case "cooldown" -> new CooldownPowerup(posX, 0, image, speed, duration);
+                case "engine" -> new EnginePowerup(posX, 0, image, speed, duration);
+                default -> null;
+            };
+
+            if (p != null) {
+                powerups.add(p);
+            }
+            j++;
+        }
     }
 
     public void checkCollisions() {
@@ -129,8 +168,9 @@ public class BattleScreen extends Screen {
             if (enemy.isActive() && (frameCount >= enemy.arrivalTime)) {
                 if (enemy.collidesWith(player)) {
                     enemy.deactive();
-                    if (!devMode) {
+                    if (!player.isInvincible()) {
                         player.loseLife();
+                        score = Math.max(0, score - Integer.parseInt(gameProps.getProperty("score.gotHit")));
                     }
                     if (player.getLives() == 0) {
                         Window.close();
@@ -154,6 +194,13 @@ public class BattleScreen extends Screen {
                 }
             }
         }
+        for (Powerup powerup : powerups) {
+            if (powerup.isActive() && player.collidesWith(powerup)) {
+                powerup.apply(player);
+                powerup.deactive();
+                score += Integer.parseInt(gameProps.getProperty("score.gotPowerup"));
+            }
+        }
     }
 
     public void deleteInactiveObjects() {
@@ -172,6 +219,13 @@ public class BattleScreen extends Screen {
         for (int i = 0; i < explosions.size(); i++) {
             if (!explosions.get(i).isActive()) {
                 explosions.remove(i);
+                i--;
+            }
+        }
+
+        for (int i = 0; i < powerups.size(); i++) {
+            if (!powerups.get(i).isActive()) {
+                powerups.remove(i);
                 i--;
             }
         }
@@ -196,7 +250,8 @@ public class BattleScreen extends Screen {
         return 1.0;
     }
 
-    public void switchDev() {
-        devMode = !devMode;
+    public void switchInv() {
+        InvMode = !InvMode;
+        player.setDevInvincible(InvMode);
     }
 }

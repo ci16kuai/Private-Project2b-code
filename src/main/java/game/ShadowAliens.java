@@ -58,9 +58,9 @@ public class ShadowAliens extends AbstractGame {
             ui.drawPause(battleScreen.calTimeScale());
         }
 
-        // I: Dev mode
+        // I: Invincible
         if (input.wasPressed(Keys.I)) {
-            battleScreen.switchDev();
+            battleScreen.switchInv();
         }
 
         // R: reset
