@@ -4,7 +4,7 @@ import bagel.Image;
 import bagel.Input;
 import bagel.Keys;
 
-public class Player extends GameObject {
+public class Player extends GameObject implements Shootable {
 
     private int baseSpeed;
     private int currentSpeed;
@@ -13,7 +13,6 @@ public class Player extends GameObject {
     private int baseShootCooldown;
     private int currentShootCooldown;
     private int coolDownLeft = 0;
-    private boolean canShoot = true;
     private int powerupDurationLeft = 0;
     private String activePowerup = "";
     private boolean devInvincible = false;
@@ -35,7 +34,7 @@ public class Player extends GameObject {
         movement(input, timeScale);
         updateCooldown();
         updatePowerup(timeScale);
-        return shoot(input);
+        return tryShoot(input);
     }
 
     public void movement(Input input, double timeScale) {
@@ -57,16 +56,20 @@ public class Player extends GameObject {
         if (coolDownLeft > 0) {
             coolDownLeft--;
         }
-        canShoot = (coolDownLeft == 0);
     }
 
-    public boolean shoot(Input input) {
-        if (input.wasPressed(Keys.SPACE) && canShoot) {
-            canShoot = false;
-            coolDownLeft = currentShootCooldown;
+    public boolean tryShoot(Input input) {
+        if (input.wasPressed(Keys.SPACE) && canShoot()) {
+            shoot();  // invoke shoot() with no parameter
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Projectile shoot() {
+        coolDownLeft = currentShootCooldown;
+        return null;  // 等 PlayerProjectile 类创建后改成 return new PlayerProjectile(...)
     }
 
     public void activatePowerup(String type, int duration) {
@@ -118,11 +121,11 @@ public class Player extends GameObject {
         return lives;
     }
 
-    public int getInitialLives() {
-        return initialLives;
-    }
-
     public void setDevInvincible(boolean value) {
         devInvincible = value;
+    }
+
+    public boolean canShoot() {
+        return coolDownLeft == 0;
     }
 }

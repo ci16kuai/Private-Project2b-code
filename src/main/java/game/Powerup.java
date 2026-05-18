@@ -2,7 +2,7 @@ package game;
 
 import bagel.Image;
 
-public abstract class Powerup extends GameObject {
+public abstract class Powerup extends GameObject implements Moveable {
 
     protected double speed;
     protected int duration;
@@ -13,9 +13,13 @@ public abstract class Powerup extends GameObject {
         this.duration = duration;
     }
 
-    public void update(double timeScale) {
+    @Override
+    public void move(double timeScale) {
         y += speed * timeScale;
+    }
 
+    public void update(double timeScale) {
+        move(timeScale);
     }
 
     public abstract void apply(Player player);
