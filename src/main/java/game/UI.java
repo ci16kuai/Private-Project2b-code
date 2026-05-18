@@ -10,7 +10,6 @@ import java.util.Properties;
 
 public class UI {
 
-    private final int textSize;
     private final Font textFont;
     private final Colour textColour;
 
@@ -28,7 +27,6 @@ public class UI {
     private final int playerLivesGap;
 
     private final String pausedTitleText;
-    private final int pausedTitleSize;
     private final Font pausedTitleFont;
     private final int pausedTitlePosY;
     private final ArrayList<String> controlListTextSplit;
@@ -46,7 +44,7 @@ public class UI {
         double b = Double.parseDouble(colour[2]);
         textColour = new Colour(r, g, b);
 
-        textSize = Integer.parseInt(gameProps.getProperty("text.size"));
+        int textSize = Integer.parseInt(gameProps.getProperty("text.size"));
         textFont = new Font(gameProps.getProperty("text.font"), textSize);
 
         waveText = gameProps.getProperty("wave.text");
@@ -67,7 +65,7 @@ public class UI {
 
         // pause mode
         pausedTitleText = gameProps.getProperty("pausedTitle.text");
-        pausedTitleSize = Integer.parseInt(gameProps.getProperty("pausedTitle.size"));
+        int pausedTitleSize = Integer.parseInt(gameProps.getProperty("pausedTitle.size"));
         pausedTitleFont = new Font(gameProps.getProperty("text.font"), pausedTitleSize);
         pausedTitlePosY = Integer.parseInt(gameProps.getProperty("pausedTitle.posY"));
         controlListTextSplit = new ArrayList<>();
