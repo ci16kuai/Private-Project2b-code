@@ -122,20 +122,31 @@ public class BattleScreen extends Screen {
 
         // initialize enemy
         enemies = new ArrayList<>();
-        Image enemyImage = new Image(gameProps.getProperty("enemy.image"));
-
+        int firingRate = Integer.parseInt(gameProps.getProperty("enemy.shooting.firingRate"));
         int i = 0;
-        // read the enemy data until no enemies
-        while ((gameProps.getProperty(String.format("enemy.%d.arrivalTime", i)) != null)) {
-            int arrivalTime = Integer.parseInt(gameProps.getProperty(String.format("enemy.%d.arrivalTime", i)));
-            int enemySpeed = Integer.parseInt(gameProps.getProperty(String.format("enemy.%d.movementSpeed", i)));
-            double enemyX = Double.parseDouble(gameProps.getProperty(String.format("enemy.%d.posX", i)));
 
-            Enemy enemy = new Enemy(enemyX, 0 - enemyImage.getHeight() / 2, enemyImage, enemySpeed, arrivalTime);
-            enemies.add(enemy);
+        while (gameProps.getProperty(String.format("wave.1.enemy.%d.type", i)) != null) {
+            String type = gameProps.getProperty(String.format("wave.1.enemy.%d.type", i));
+            int arrivalTime = Integer.parseInt(gameProps.getProperty(String.format("wave.1.enemy.%d.arrivalTime", i)));
+            int enemySpeed = Integer.parseInt(gameProps.getProperty(String.format("wave.1.enemy.%d.movementSpeed", i)));
+            double enemyX = Double.parseDouble(gameProps.getProperty(String.format("wave.1.enemy.%d.posX", i)));
+            Image enemyImage = new Image(gameProps.getProperty("enemy." + type + ".image"));
+            double startY = 0 - enemyImage.getHeight() / 2;
+
+            Enemy enemy = switch (type) {
+                case "regular"  -> new RegularEnemy(enemyX, startY, enemyImage, enemySpeed, arrivalTime);
+                case "strafing" -> new StrafingEnemy(enemyX, startY, enemyImage, enemySpeed, arrivalTime);
+                case "shooting" -> new ShootingEnemy(enemyX, startY, enemyImage, enemySpeed, arrivalTime, firingRate);
+                default -> null;
+            };
+
+            if (enemy != null) {
+                enemies.add(enemy);
+            }
             i++;
         }
 
+        //initialize powerups
         int j = 0;
         while (gameProps.getProperty(String.format("wave.1.powerup.%d.type", j)) != null) {
             String type = gameProps.getProperty(String.format("wave.1.powerup.%d.type", j));
@@ -185,9 +196,16 @@ public class BattleScreen extends Screen {
                     if (enemy.collidesWith(projectile)) {
                         enemy.deactive();
                         projectile.deactive();
-                        score += 1;
-                        Image explosionImage = new Image(gameProps.getProperty("explosion.image"));
-                        int explosionDuration = Integer.parseInt(gameProps.getProperty("explosion.duration"));
+                        //Add points based on the type of enemy:
+                        if (enemy instanceof RegularEnemy) {
+                            score += Integer.parseInt(gameProps.getProperty("score.destroyedEnemy.regular"));
+                        } else if (enemy instanceof StrafingEnemy) {
+                            score += Integer.parseInt(gameProps.getProperty("score.destroyedEnemy.strafing"));
+                        } else if (enemy instanceof ShootingEnemy) {
+                            score += Integer.parseInt(gameProps.getProperty("score.destroyedEnemy.shooting"));
+                        }
+                        Image explosionImage = new Image(gameProps.getProperty("explosion.large.image"));
+                        int explosionDuration = Integer.parseInt(gameProps.getProperty("explosion.large.duration"));
                         Explosion explosion = new Explosion(enemy.getX(), enemy.getY(), explosionImage, explosionDuration);
                         explosions.add(explosion);
                     }

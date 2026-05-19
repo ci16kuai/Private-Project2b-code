@@ -3,7 +3,7 @@ package game;
 import bagel.DrawOptions;
 import bagel.Image;
 
-public class Enemy extends GameObject {
+public abstract class Enemy extends GameObject {
 
     public int speed;
     protected int arrivalTime;
@@ -14,20 +14,7 @@ public class Enemy extends GameObject {
         this.arrivalTime = arrivalTime;
     }
 
-    public void update(double frameCount, double timeScale) {
-        // if the enemy has not arrived yet, return
-        if (frameCount < arrivalTime) {
-            return;
-        } else {
-            // apply timeScale so game speed changes affect enemy movement
-            y += speed * timeScale;
-        }
-
-        // if enemy is outside screen, deactivate
-        if (y >= ShadowAliens.getScreenHeight() + image.getHeight() / 2) {
-            deactive();
-        }
-    }
+    public abstract void update(double frameCount, double timeScale);
 
     @Override
     public void draw() {
