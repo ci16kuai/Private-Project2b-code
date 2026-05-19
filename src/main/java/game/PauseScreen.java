@@ -20,7 +20,7 @@ public class PauseScreen extends Screen {
 
     @Override
     public void draw() {
-        // the pause screen shows the battle scene frozen underneath the pause overlay
         battleScreen.draw();
+        ShadowAliens.getUI().drawPause(battleScreen.calTimeScale());
     }
 }

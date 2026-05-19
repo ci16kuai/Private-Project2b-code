@@ -17,9 +17,12 @@ public class ShadowAliens extends AbstractGame {
     private static double screenHeight;
     private static UI ui;
 
+
     public BattleScreen battleScreen;
     public PauseScreen pauseScreen;
     public Screen currentScreen;
+    private StartScreen startScreen;
+    private EndScreen endScreen;
 
     public ShadowAliens(Properties gameProps) {
         super(Integer.parseInt(gameProps.getProperty("window.width")),
@@ -41,7 +44,8 @@ public class ShadowAliens extends AbstractGame {
 
         battleScreen = new BattleScreen(gameProps);
         pauseScreen = new PauseScreen(gameProps, battleScreen);
-        currentScreen = battleScreen;
+        startScreen = new StartScreen(gameProps);
+        currentScreen = startScreen;
     }
 
     /**
@@ -52,11 +56,6 @@ public class ShadowAliens extends AbstractGame {
     protected void update(Input input) {
         currentScreen.update(input);
         switchMode(input);
-
-        // if the game is paused, draw pause UI
-        if (currentScreen instanceof PauseScreen) {
-            ui.drawPause(battleScreen.calTimeScale());
-        }
 
         // I: Invincible
         if (input.wasPressed(Keys.I)) {
@@ -86,7 +85,11 @@ public class ShadowAliens extends AbstractGame {
     }
 
     public void switchMode(Input input) {
-        // switch Screen if ESC is pressed
+        // Start → Battle
+        if (input.wasPressed(Keys.SPACE) && currentScreen instanceof StartScreen) {
+            currentScreen = battleScreen;
+        }
+        // Battle ↔ Pause
         if (input.wasPressed(Keys.ESCAPE)) {
             if (currentScreen instanceof BattleScreen) {
                 currentScreen = pauseScreen;
@@ -94,12 +97,19 @@ public class ShadowAliens extends AbstractGame {
                 currentScreen = battleScreen;
             }
         }
+        // End → new Battle
+        if (currentScreen instanceof EndScreen && ((EndScreen) currentScreen).shouldRestart()) {
+            battleScreen = new BattleScreen(gameProps);
+            pauseScreen = new PauseScreen(gameProps, battleScreen);
+            currentScreen = battleScreen;
+        }
     }
 
     private void resetGame() {
         battleScreen = new BattleScreen(gameProps);
         pauseScreen = new PauseScreen(gameProps, battleScreen);
-        currentScreen = battleScreen;
+        startScreen = new StartScreen(gameProps);
+        currentScreen = startScreen;
     }
 
     public static double getScreenWidth() {
