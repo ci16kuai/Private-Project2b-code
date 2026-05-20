@@ -7,11 +7,16 @@ public class ShootingEnemy extends Enemy implements Shootable {
 
     private int firingRate;
     private int cooldownLeft;
+    private Image projectileImage;
+    private double projectileSpeed;
 
-    public ShootingEnemy(double x, double y, Image image, int speed, int arrivalTime, int firingRate) {
+    public ShootingEnemy(double x, double y, Image image, int speed, int arrivalTime,
+                         int firingRate, Image projectileImage, double projectileSpeed) {
         super(x, y, image, speed, arrivalTime);
         this.firingRate = firingRate;
-        this.cooldownLeft = firingRate; // first shot at arrivalTime + firingRate
+        this.cooldownLeft = firingRate;
+        this.projectileImage = projectileImage;
+        this.projectileSpeed = projectileSpeed;
     }
 
     @Override
@@ -40,10 +45,9 @@ public class ShootingEnemy extends Enemy implements Shootable {
     }
 
     @Override
-    public Projectile shoot() {
+    public EnemyProjectile shoot() {
         cooldownLeft = firingRate;
-        // EnemyProjectile 创建后替换这里的 null
-        return null;
+        return new EnemyProjectile(x, y + image.getHeight() / 2, projectileImage, projectileSpeed);
     }
 
     @Override

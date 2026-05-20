@@ -10,16 +10,22 @@ public class Player extends GameObject implements Shootable {
     private int currentSpeed;
     private int initialLives;
     private int lives;
+
     private int baseShootCooldown;
     private int currentShootCooldown;
     private int coolDownLeft = 0;
+
     private int powerupDurationLeft = 0;
     private String activePowerup = "";
     private boolean devInvincible = false;
     private int hitInvincibilityTime;
     private int hitInvincibilityLeft = 0;
 
-    public Player(double x, double y, Image image, int speed, int lives, int shootCooldown, int hitInvincibilityTime) {
+    private Image projectileImage;
+    private double projectileSpeed;
+
+    public Player(double x, double y, Image image, int speed, int lives, int shootCooldown, int hitInvincibilityTime,
+                  Image projectileImage, double projectileSpeed) {
         super(x, y, image);
         this.baseSpeed = speed;
         this.currentSpeed = speed;
@@ -28,9 +34,11 @@ public class Player extends GameObject implements Shootable {
         this.baseShootCooldown = shootCooldown;
         this.currentShootCooldown = shootCooldown;
         this.hitInvincibilityTime = hitInvincibilityTime;
+        this.projectileImage = projectileImage;
+        this.projectileSpeed = projectileSpeed;
     }
 
-    public boolean update(Input input, double timeScale) {
+    public PlayerProjectile update(Input input, double timeScale) {
         movement(input, timeScale);
         updateCooldown();
         updatePowerup(timeScale);
@@ -58,18 +66,17 @@ public class Player extends GameObject implements Shootable {
         }
     }
 
-    public boolean tryShoot(Input input) {
+    public PlayerProjectile tryShoot(Input input) {
         if (input.wasPressed(Keys.SPACE) && canShoot()) {
-            shoot();  // invoke shoot() with no parameter
-            return true;
+            return shoot();
         }
-        return false;
+        return null;
     }
 
     @Override
-    public Projectile shoot() {
+    public PlayerProjectile shoot() {
         coolDownLeft = currentShootCooldown;
-        return null;  // 等 PlayerProjectile 类创建后改成 return new PlayerProjectile(...)
+        return new PlayerProjectile(x, y - image.getHeight() / 2, projectileImage, projectileSpeed);
     }
 
     public void activatePowerup(String type, int duration) {

@@ -35,7 +35,9 @@ public class EndScreen extends Screen {
         int initialLives = Integer.parseInt(gameProps.getProperty("player.initialLives"));
         int shootCooldown = Integer.parseInt(gameProps.getProperty("player.shootCooldown"));
         int hitInvincibilityTime = Integer.parseInt(gameProps.getProperty("player.hitInvincibilityTime"));
-        player = new Player(playerX, playerY, playerImage, playerSpeed, initialLives, shootCooldown, hitInvincibilityTime);
+        Image projectileImage = new Image(gameProps.getProperty("projectile.image"));
+        double projectileSpeed = Double.parseDouble(gameProps.getProperty("projectile.movementSpeed"));
+        player = new Player(playerX, playerY, playerImage, playerSpeed, initialLives, shootCooldown, hitInvincibilityTime, projectileImage, projectileSpeed );
 
         // load text settings
         String fontPath = gameProps.getProperty("text.font");
