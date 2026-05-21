@@ -2,7 +2,6 @@ package game;
 
 import bagel.Image;
 import bagel.Input;
-import bagel.Window;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -34,7 +33,6 @@ public class BattleScreen extends Screen {
     @Override
     public void update(Input input) {
         double currentTimeScale = calTimeScale();
-
         // update player status
         PlayerProjectile p = player.update(input, currentTimeScale);
         if (p != null) {
