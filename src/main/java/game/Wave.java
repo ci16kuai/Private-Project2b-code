@@ -20,6 +20,8 @@ public class Wave {
         this.powerups = new ArrayList<>();
         this.completed = false;
         this.frameCount = 0;
+        loadEnemies();
+        loadPowerups();
     }
 
     private void loadEnemies() {

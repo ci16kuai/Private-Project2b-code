@@ -92,6 +92,13 @@ public class ShadowAliens extends AbstractGame {
         if (input.wasPressed(Keys.F)) {
             battleScreen.speedDown();
         }
+
+        // N: Skip current wave
+        if (input.wasPressed(Keys.N)) {
+            if (currentScreen instanceof BattleScreen || currentScreen instanceof PauseScreen) {
+                battleScreen.skipWave();
+            }
+        }
     }
 
     public static void main(String[] args) {

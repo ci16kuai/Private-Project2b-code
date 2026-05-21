@@ -16,7 +16,6 @@ public class BattleScreen extends Screen {
     private ArrayList<Wave> waves;
     private int currentWaveIndex = 0;
 
-
     // UI
     private int lives;
     private int wave = 1;
@@ -26,6 +25,8 @@ public class BattleScreen extends Screen {
 
     private boolean InvMode = false;
     private int speedLevel = 0;
+
+    private boolean gameWon = false;
 
     public BattleScreen(Properties gameProps) {
         super(gameProps);
@@ -84,13 +85,12 @@ public class BattleScreen extends Screen {
         currentWave.deleteInactiveEnemies();
 
         // check wave completion
-        if (currentWave.isCompleted() && enemyProjectiles.isEmpty()) {
+        if (getCurrentWave().isCompleted() && enemyProjectiles.isEmpty()) {
             if (currentWaveIndex < waves.size() - 1) {
                 advanceWave();
             } else {
-                // all waves complete -> win
                 score += Integer.parseInt(gameProps.getProperty("score.waveCompleted"));
-                isGameWon();
+                gameWon = true;
             }
         }
 
@@ -102,35 +102,24 @@ public class BattleScreen extends Screen {
 
     @Override
     public void draw() {
-        // draw player
         player.draw();
 
-        // draw enemies
-        for (Enemy enemy : enemies) {
-            enemy.draw();
-        }
+        getCurrentWave().draw();
 
-        // draw projectiles
         for (PlayerProjectile projectile : projectiles) {
             projectile.draw();
         }
+
         for (EnemyProjectile ep : enemyProjectiles) {
             ep.draw();
         }
 
-        // draw powerups
-        for (Powerup powerup : powerups) {
-            powerup.draw();
-        }
-
-        // draw explosions
         for (Explosion explosion : explosions) {
             explosion.draw();
         }
 
-        // draw UI
         lives = player.getLives();
-        ShadowAliens.getUI().draw(lives, wave, score);
+        ShadowAliens.getUI().draw(lives, getCurrentWave().getWaveNumber(), score);
     }
 
     public void initialiseObjects() {
@@ -165,7 +154,7 @@ public class BattleScreen extends Screen {
 
     public void checkCollisions() {
         // check if player collides with enemies
-        for (Enemy enemy : enemies) {
+        for (Enemy enemy : getCurrentWave().getEnemies()) {
             if (enemy.isActive() && (frameCount >= enemy.arrivalTime)) {
                 if (enemy.collidesWith(player)) {
                     enemy.deactive();
@@ -181,7 +170,7 @@ public class BattleScreen extends Screen {
             }
         }
         // check if enemies collide with projectiles
-        for (Enemy enemy : enemies) {
+        for (Enemy enemy : getCurrentWave().getEnemies()) {
             for (PlayerProjectile projectile : projectiles) {
                 if (enemy.isActive() && (frameCount >= enemy.arrivalTime)) {
                     if (enemy.collidesWith(projectile)) {
@@ -235,7 +224,7 @@ public class BattleScreen extends Screen {
             }
         }
 
-        for (Powerup powerup : powerups) {
+        for (Powerup powerup : getCurrentWave().getPowerups()) {
             if (powerup.isActive() && player.collidesWith(powerup)) {
                 powerup.apply(player);
                 powerup.deactive();
@@ -245,34 +234,25 @@ public class BattleScreen extends Screen {
     }
 
     public void deleteInactiveObjects() {
-        for (int i = 0; i < enemies.size(); i++) {
-            if (!enemies.get(i).isActive()) {
-                enemies.remove(i);
-                i--;
-            }
-        }
+        //the deletion for enemy and powerups are handled in wave class
+
         for (int i = 0; i < enemyProjectiles.size(); i++) {
             if (!enemyProjectiles.get(i).isActive()) {
                 enemyProjectiles.remove(i);
                 i--;
             }
         }
+
         for (int i = 0; i < projectiles.size(); i++) {
             if (!projectiles.get(i).isActive()) {
                 projectiles.remove(i);
                 i--;
             }
         }
+
         for (int i = 0; i < explosions.size(); i++) {
             if (!explosions.get(i).isActive()) {
                 explosions.remove(i);
-                i--;
-            }
-        }
-
-        for (int i = 0; i < powerups.size(); i++) {
-            if (!powerups.get(i).isActive()) {
-                powerups.remove(i);
                 i--;
             }
         }
@@ -305,7 +285,32 @@ public class BattleScreen extends Screen {
     public void advanceWave() {
         score += Integer.parseInt(gameProps.getProperty("score.waveCompleted"));
         currentWaveIndex++;
+        wave = currentWaveIndex + 1;
         projectiles.clear();
+        enemyProjectiles.clear();
+    }
+
+    private Wave getCurrentWave() {
+        return waves.get(currentWaveIndex);
+    }
+
+    public void skipWave() {
+        Wave currentWave = waves.get(currentWaveIndex);
+        // clear all gameObjects, no explosion and no points of Objects rewarded
+        currentWave.getEnemies().clear();
+        currentWave.getPowerups().clear();
+        enemyProjectiles.clear();
+        projectiles.clear();
+
+        // wave points rewarded
+        score += Integer.parseInt(gameProps.getProperty("score.waveCompleted"));
+
+        // identify if it's last wave
+        if (currentWaveIndex < waves.size() - 1) {
+            currentWaveIndex++;
+        } else {
+            gameWon = true;
+        }
     }
 
     public boolean isGameOver() {
@@ -313,6 +318,6 @@ public class BattleScreen extends Screen {
     }
 
     public boolean isGameWon() {
-        return enemies.isEmpty();
+        return gameWon;
     }
 }
