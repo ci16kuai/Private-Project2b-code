@@ -22,6 +22,9 @@ public class StrafingEnemy extends Enemy {
         if (frameCount < arrivalTime) {
             return;
         }
+        if (!hasArrived(frameCount)) {
+            return;
+        }
         // move down
         y += speed * timeScale;
 
@@ -40,10 +43,5 @@ public class StrafingEnemy extends Enemy {
         if (y >= ShadowAliens.getScreenHeight() + image.getHeight() / 2) {
             deactive();
         }
-    }
-
-    @Override
-    public void draw() {
-        image.draw(x, y, new DrawOptions().setRotation(Math.PI/2));
     }
 }

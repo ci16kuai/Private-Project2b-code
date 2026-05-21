@@ -16,9 +16,13 @@ public abstract class Enemy extends GameObject {
 
     public abstract void update(double frameCount, double timeScale);
 
+    public boolean hasArrived(double frameCount) {
+        return frameCount >= arrivalTime;
+    }
+
     @Override
     public void draw() {
-        // rotate 180 degrees so the enemy ship faces downward
+        // rotate 90 degrees so the enemy ship faces downward
         image.draw(x, y, new DrawOptions().setRotation(Math.PI/2));
     }
 }

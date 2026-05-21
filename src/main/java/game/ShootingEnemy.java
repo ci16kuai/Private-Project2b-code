@@ -24,6 +24,9 @@ public class ShootingEnemy extends Enemy implements Shootable {
         if (frameCount < arrivalTime) {
             return;
         }
+        if (!hasArrived(frameCount)) {
+            return;
+        }
         y += speed * timeScale;
         updateCooldown();
         // if enemy is outside screen, deactivate

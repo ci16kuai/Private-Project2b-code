@@ -112,6 +112,7 @@ public class ShadowAliens extends AbstractGame {
         if (input.wasPressed(Keys.SPACE) && currentScreen instanceof StartScreen) {
             currentScreen = battleScreen;
         }
+
         // Battle ↔ Pause
         if (input.wasPressed(Keys.ESCAPE)) {
             if (currentScreen instanceof BattleScreen) {
@@ -120,6 +121,7 @@ public class ShadowAliens extends AbstractGame {
                 currentScreen = battleScreen;
             }
         }
+
         // End → new Battle
         if (currentScreen instanceof EndScreen && ((EndScreen) currentScreen).shouldRestart()) {
             battleScreen = new BattleScreen(gameProps);

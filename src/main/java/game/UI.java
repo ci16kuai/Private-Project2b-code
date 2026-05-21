@@ -82,30 +82,26 @@ public class UI {
     }
 
     public void draw(int lives, int wave, int score) {
+        DrawOptions options = new DrawOptions().setBlendColour(textColour);
         // draw player lives
         for (int i = 0; i < lives; i++) {
             playerLifeImage.draw(playerLivesStartX + i * playerLivesGap, playerLivesStartY);
         }
         // draw wave
-        textFont.drawString(String.format("%s %d", waveText, wave), waveX, waveY,
-                new DrawOptions().setBlendColour(textColour));
+        textFont.drawString(String.format("%s %d", waveText, wave), waveX, waveY, options);
         // draw score
-        textFont.drawString(String.format("%s %d", scoreText, score), scoreX, scoreY,
-                new DrawOptions().setBlendColour(textColour));
+        textFont.drawString(String.format("%s %d", scoreText, score), scoreX, scoreY, options);
     }
 
     public void drawPause(double timeScale) {
         DrawOptions options = new DrawOptions().setBlendColour(textColour);
-
         // draw title
         drawCentreText(pausedTitleText, pausedTitleFont, pausedTitlePosY, options);
-
         // draw controls list
         for (int i = 0; i < controlListTextSplit.size(); i++) {
             double y = controlsListStartPosY + i * controlsListRowGap;
             drawCentreText(controlListTextSplit.get(i), textFont, y, options);
         }
-
         // draw timescale
         String timeScaleStr = String.format("%s %s", timescaleText, timeScale);
         textFont.drawString(timeScaleStr, timeScalePosX, timeScalePosY, options);

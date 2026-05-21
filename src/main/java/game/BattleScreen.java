@@ -10,19 +10,15 @@ import java.util.Properties;
 public class BattleScreen extends Screen {
 
     private Player player;
-    public ArrayList<PlayerProjectile> projectiles;
-    public ArrayList<EnemyProjectile> enemyProjectiles;
-    public ArrayList<Explosion> explosions;
+    private ArrayList<PlayerProjectile> projectiles;
+    private ArrayList<EnemyProjectile> enemyProjectiles;
+    private ArrayList<Explosion> explosions;
     private ArrayList<Wave> waves;
     private int currentWaveIndex = 0;
 
     // UI
     private int lives;
-    private int wave = 1;
     private int score = 0;
-    private double frameCount;
-    public double timeScale = 1.0;
-
     private boolean InvMode = false;
     private int speedLevel = 0;
 
@@ -95,9 +91,7 @@ public class BattleScreen extends Screen {
         }
 
         draw();
-        frameCount += currentTimeScale;
     }
-
 
 
     @Override
@@ -155,7 +149,7 @@ public class BattleScreen extends Screen {
     public void checkCollisions() {
         // check if player collides with enemies
         for (Enemy enemy : getCurrentWave().getEnemies()) {
-            if (enemy.isActive() && (frameCount >= enemy.arrivalTime)) {
+            if (enemy.isActive()) {
                 if (enemy.collidesWith(player)) {
                     enemy.deactive();
                     // large Explosion
@@ -172,7 +166,7 @@ public class BattleScreen extends Screen {
         // check if enemies collide with projectiles
         for (Enemy enemy : getCurrentWave().getEnemies()) {
             for (PlayerProjectile projectile : projectiles) {
-                if (enemy.isActive() && (frameCount >= enemy.arrivalTime)) {
+                if (enemy.isActive()) {
                     if (enemy.collidesWith(projectile)) {
                         enemy.deactive();
                         projectile.deactive();
@@ -285,7 +279,6 @@ public class BattleScreen extends Screen {
     public void advanceWave() {
         score += Integer.parseInt(gameProps.getProperty("score.waveCompleted"));
         currentWaveIndex++;
-        wave = currentWaveIndex + 1;
         projectiles.clear();
         enemyProjectiles.clear();
     }
@@ -297,8 +290,7 @@ public class BattleScreen extends Screen {
     public void skipWave() {
         Wave currentWave = waves.get(currentWaveIndex);
         // clear all gameObjects, no explosion and no points of Objects rewarded
-        currentWave.getEnemies().clear();
-        currentWave.getPowerups().clear();
+        currentWave.clearObjects();
         enemyProjectiles.clear();
         projectiles.clear();
 

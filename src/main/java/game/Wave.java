@@ -10,7 +10,6 @@ public class Wave {
     private int waveNumber;
     private ArrayList<Enemy> enemies;
     private ArrayList<Powerup> powerups;
-    private boolean completed;
     private int frameCount;
 
     public Wave(Properties gameProps, int waveNumber) {
@@ -18,7 +17,6 @@ public class Wave {
         this.waveNumber = waveNumber;
         this.enemies = new ArrayList<>();
         this.powerups = new ArrayList<>();
-        this.completed = false;
         this.frameCount = 0;
         loadEnemies();
         loadPowerups();
@@ -62,12 +60,14 @@ public class Wave {
             double speed = Double.parseDouble(gameProps.getProperty("powerup." + type + ".movementSpeed"));
             String durationStr = gameProps.getProperty("powerup." + type + ".duration");
             int duration = (durationStr != null) ? Integer.parseInt(durationStr) : 0;
+            int arrivalTime = Integer.parseInt(gameProps.getProperty(
+                    String.format("wave.%d.powerup.%d.arrivalTime", waveNumber, j)));
 
             Powerup p = switch (type) {
-                case "shield"   -> new ShieldPowerup(posX, 0, image, speed, duration);
-                case "life"     -> new LifePowerup(posX, 0, image, speed, duration);
-                case "cooldown" -> new CooldownPowerup(posX, 0, image, speed, duration);
-                case "engine"   -> new EnginePowerup(posX, 0, image, speed, duration);
+                case "shield"   -> new ShieldPowerup(posX, 0, image, speed, duration, arrivalTime);
+                case "life"     -> new LifePowerup(posX, 0, image, speed, duration, arrivalTime);
+                case "cooldown" -> new CooldownPowerup(posX, 0, image, speed, duration, arrivalTime);
+                case "engine"   -> new EnginePowerup(posX, 0, image, speed, duration, arrivalTime);
                 default -> null;
             };
 
@@ -80,20 +80,26 @@ public class Wave {
 
     public void update(double timeScale) {
         frameCount++;
+
         for (Enemy enemy : enemies) {
             enemy.update(frameCount, timeScale);
         }
+
         for (Powerup powerup : powerups) {
-            powerup.update(timeScale);
+            powerup.update(frameCount, timeScale);
         }
     }
 
     public void draw() {
         for (Enemy enemy : enemies) {
-            enemy.draw();
+            if (enemy.hasArrived(frameCount)) {
+                enemy.draw();
+            }
         }
         for (Powerup powerup : powerups) {
-            powerup.draw();
+            if (powerup.hasArrived(frameCount)) {
+                powerup.draw();
+            }
         }
     }
 
@@ -110,6 +116,11 @@ public class Wave {
                 i--;
             }
         }
+    }
+
+    public void clearObjects() {
+        enemies.clear();
+        powerups.clear();
     }
 
     public boolean isCompleted() {
