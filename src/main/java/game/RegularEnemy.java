@@ -24,6 +24,6 @@ public class RegularEnemy extends Enemy {
 
     @Override
     public void draw() {
-        image.draw(x, y, new DrawOptions().setRotation(Math.PI));
+        image.draw(x, y, new DrawOptions().setRotation(Math.PI/2));
     }
 }

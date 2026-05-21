@@ -19,6 +19,6 @@ public abstract class Enemy extends GameObject {
     @Override
     public void draw() {
         // rotate 180 degrees so the enemy ship faces downward
-        image.draw(x, y, new DrawOptions().setRotation(Math.PI));
+        image.draw(x, y, new DrawOptions().setRotation(Math.PI/2));
     }
 }

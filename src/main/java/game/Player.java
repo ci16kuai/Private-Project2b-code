@@ -24,8 +24,10 @@ public class Player extends GameObject implements Shootable {
     private Image projectileImage;
     private double projectileSpeed;
 
+    private Image invincibilityImage;
+
     public Player(double x, double y, Image image, int speed, int lives, int shootCooldown, int hitInvincibilityTime,
-                  Image projectileImage, double projectileSpeed) {
+                  Image projectileImage, double projectileSpeed, Image invincibilityImage) {
         super(x, y, image);
         this.baseSpeed = speed;
         this.currentSpeed = speed;
@@ -36,6 +38,7 @@ public class Player extends GameObject implements Shootable {
         this.hitInvincibilityTime = hitInvincibilityTime;
         this.projectileImage = projectileImage;
         this.projectileSpeed = projectileSpeed;
+        this.invincibilityImage = invincibilityImage;
     }
 
     public PlayerProjectile update(Input input, double timeScale) {
@@ -104,6 +107,14 @@ public class Player extends GameObject implements Shootable {
         }
         if (hitInvincibilityLeft > 0) {
             hitInvincibilityLeft -= timeScale;
+        }
+    }
+
+    @Override
+    public void draw() {
+        super.draw();
+        if (isInvincible()) {
+            invincibilityImage.draw(x, y);
         }
     }
 

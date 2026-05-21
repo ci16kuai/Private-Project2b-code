@@ -20,6 +20,10 @@ public abstract class Powerup extends GameObject implements Moveable {
 
     public void update(double timeScale) {
         move(timeScale);
+
+        if (y >= ShadowAliens.getScreenHeight() + image.getHeight() / 2) {
+            deactive();
+        }
     }
 
     public abstract void apply(Player player);

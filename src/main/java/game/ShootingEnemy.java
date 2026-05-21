@@ -50,8 +50,4 @@ public class ShootingEnemy extends Enemy implements Shootable {
         return new EnemyProjectile(x, y + image.getHeight() / 2, projectileImage, projectileSpeed);
     }
 
-    @Override
-    public void draw() {
-        image.draw(x, y, new DrawOptions().setRotation(Math.PI));
-    }
 }

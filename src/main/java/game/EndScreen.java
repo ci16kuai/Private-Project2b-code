@@ -12,7 +12,6 @@ import bagel.Keys;
 public class EndScreen extends Screen {
 
     private Player player;
-    private boolean isWin;
     private boolean restartRequested = false;
     private Font resultFont;
     private Font textFont;
@@ -25,7 +24,6 @@ public class EndScreen extends Screen {
 
     public EndScreen(Properties gameProps, boolean isWin) {
         super(gameProps);
-        this.isWin = isWin;
 
         // load player (can move left/right, cannot shoot)
         Image playerImage = new Image(gameProps.getProperty("player.image"));
@@ -37,7 +35,8 @@ public class EndScreen extends Screen {
         int hitInvincibilityTime = Integer.parseInt(gameProps.getProperty("player.hitInvincibilityTime"));
         Image projectileImage = new Image(gameProps.getProperty("projectile.image"));
         double projectileSpeed = Double.parseDouble(gameProps.getProperty("projectile.movementSpeed"));
-        player = new Player(playerX, playerY, playerImage, playerSpeed, initialLives, shootCooldown, hitInvincibilityTime, projectileImage, projectileSpeed );
+        Image invincibilityImage = new Image(gameProps.getProperty("invincibility.image"));
+        player = new Player(playerX, playerY, playerImage, playerSpeed, initialLives, shootCooldown, hitInvincibilityTime, projectileImage, projectileSpeed, invincibilityImage);
 
         // load text settings
         String fontPath = gameProps.getProperty("text.font");
