@@ -6,7 +6,7 @@ import bagel.Image;
 public class ShootingEnemy extends Enemy implements Shootable {
 
     private int firingRate;
-    private int cooldownLeft;
+    private double cooldownLeft;
     private Image projectileImage;
     private double projectileSpeed;
 
@@ -21,30 +21,26 @@ public class ShootingEnemy extends Enemy implements Shootable {
 
     @Override
     public void update(double frameCount, double timeScale) {
-        if (frameCount < arrivalTime) {
-            return;
-        }
         if (!hasArrived(frameCount)) {
             return;
         }
         y += speed * timeScale;
-        updateCooldown();
+        updateCooldown(timeScale);
         // if enemy is outside screen, deactivate
         if (y >= ShadowAliens.getScreenHeight() + image.getHeight() / 2) {
             deactive();
         }
     }
 
-    @Override
-    public void updateCooldown() {
+    public void updateCooldown(double timeScale) {
         if (cooldownLeft > 0) {
-            cooldownLeft--;
+            cooldownLeft -= timeScale;
         }
     }
 
     @Override
     public boolean canShoot() {
-        return cooldownLeft == 0;
+        return cooldownLeft <= 0;
     }
 
     @Override

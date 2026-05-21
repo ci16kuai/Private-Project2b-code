@@ -18,9 +18,9 @@ public class ShadowAliens extends AbstractGame {
     private static UI ui;
 
 
-    public BattleScreen battleScreen;
-    public PauseScreen pauseScreen;
-    public Screen currentScreen;
+    private BattleScreen battleScreen;
+    private PauseScreen pauseScreen;
+    private Screen currentScreen;
     private StartScreen startScreen;
     private EndScreen endScreen;
 

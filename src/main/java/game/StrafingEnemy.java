@@ -19,9 +19,6 @@ public class StrafingEnemy extends Enemy {
 
     @Override
     public void update(double frameCount, double timeScale) {
-        if (frameCount < arrivalTime) {
-            return;
-        }
         if (!hasArrived(frameCount)) {
             return;
         }

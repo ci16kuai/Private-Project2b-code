@@ -10,7 +10,7 @@ public class Wave {
     private int waveNumber;
     private ArrayList<Enemy> enemies;
     private ArrayList<Powerup> powerups;
-    private int frameCount;
+    private double frameCount;
 
     public Wave(Properties gameProps, int waveNumber) {
         this.gameProps = gameProps;
@@ -79,7 +79,7 @@ public class Wave {
     }
 
     public void update(double timeScale) {
-        frameCount++;
+        frameCount+=timeScale;
 
         for (Enemy enemy : enemies) {
             enemy.update(frameCount, timeScale);
@@ -137,5 +137,9 @@ public class Wave {
 
     public int getWaveNumber() {
         return waveNumber;
+    }
+
+    public double getFrameCount() {
+        return frameCount;
     }
 }

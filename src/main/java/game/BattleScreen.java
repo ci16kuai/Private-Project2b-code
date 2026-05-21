@@ -149,7 +149,7 @@ public class BattleScreen extends Screen {
     public void checkCollisions() {
         // check if player collides with enemies
         for (Enemy enemy : getCurrentWave().getEnemies()) {
-            if (enemy.isActive()) {
+            if (enemy.isActive() && enemy.hasArrived(getCurrentWave().getFrameCount())) {
                 if (enemy.collidesWith(player)) {
                     enemy.deactive();
                     // large Explosion
@@ -166,7 +166,7 @@ public class BattleScreen extends Screen {
         // check if enemies collide with projectiles
         for (Enemy enemy : getCurrentWave().getEnemies()) {
             for (PlayerProjectile projectile : projectiles) {
-                if (enemy.isActive()) {
+                if (enemy.isActive() && enemy.hasArrived(getCurrentWave().getFrameCount())) {
                     if (enemy.collidesWith(projectile)) {
                         enemy.deactive();
                         projectile.deactive();

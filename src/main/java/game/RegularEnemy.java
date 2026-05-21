@@ -12,9 +12,6 @@ public class RegularEnemy extends Enemy {
     @Override
     public void update(double frameCount, double timeScale) {
         // if the enemy has not arrived yet, return
-        if (frameCount < arrivalTime) {
-            return;
-        }
         if (!hasArrived(frameCount)) {
             return;
         }
