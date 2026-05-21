@@ -55,6 +55,22 @@ public class ShadowAliens extends AbstractGame {
     @Override
     protected void update(Input input) {
         currentScreen.update(input);
+
+        // Change current screen to endScreen
+        if (currentScreen instanceof BattleScreen) {
+            if (battleScreen.isGameOver()) {
+                endScreen = new EndScreen(gameProps, false);
+                currentScreen = endScreen;
+                return;
+            }
+
+            if (battleScreen.isGameWon()) {
+                endScreen = new EndScreen(gameProps, true);
+                currentScreen = endScreen;
+                return;
+            }
+        }
+
         switchMode(input);
 
         // I: Invincible

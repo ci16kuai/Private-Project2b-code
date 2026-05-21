@@ -33,7 +33,8 @@ public class StartScreen extends Screen {
         int hitInvincibilityTime = Integer.parseInt(gameProps.getProperty("player.hitInvincibilityTime"));
         Image projectileImage = new Image(gameProps.getProperty("projectile.image"));
         double projectileSpeed = Double.parseDouble(gameProps.getProperty("projectile.movementSpeed"));
-        player = new Player(playerX, playerY, playerImage, playerSpeed, initialLives, shootCooldown, hitInvincibilityTime, projectileImage, projectileSpeed);
+        Image invincibilityImage = new Image(gameProps.getProperty("invincibility.image"));
+        player = new Player(playerX, playerY, playerImage, playerSpeed, initialLives, shootCooldown, hitInvincibilityTime, projectileImage, projectileSpeed, invincibilityImage);
 
         // load text settings
         String fontPath = gameProps.getProperty("text.font");
