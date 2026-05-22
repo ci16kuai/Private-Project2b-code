@@ -9,41 +9,51 @@ import java.util.Properties;
 public class BattleScreen extends Screen {
 
     private Player player;
+
+    // Lists for objects that exist during battle
     private ArrayList<PlayerProjectile> projectiles;
     private ArrayList<EnemyProjectile> enemyProjectiles;
     private ArrayList<Explosion> explosions;
+
+    // Stores all waves and tracks the current wave
     private ArrayList<Wave> waves;
     private int currentWaveIndex = 0;
 
-    // UI
+    // UI values
     private int lives;
     private int score = 0;
+
+    // Developer invincibility mode
     private boolean InvMode = false;
+
+    // Controls the game speed level
     private int speedLevel = 0;
 
+    // True when the player has completed all waves
     private boolean gameWon = false;
 
     public BattleScreen(Properties gameProps) {
         super(gameProps);
 
-        // initialize battle screen objects
+        // Create all battle objects
         initialiseObjects();
     }
 
     @Override
     public void update(Input input) {
         double currentTimeScale = calTimeScale();
-        // update player status
+
+        // Update player and create a projectile if the player shoots
         PlayerProjectile p = player.update(input, currentTimeScale);
         if (p != null) {
             projectiles.add(p);
         }
 
-        // update current wave (enemies + powerups)
+        // Update enemies and powerups in the current wave
         Wave currentWave = waves.get(currentWaveIndex);
         currentWave.update(currentTimeScale);
 
-        // collect enemy projectiles from ShootingEnemies
+        // Let shooting enemies create projectiles when ready
         for (Enemy enemy : currentWave.getEnemies()) {
             if (enemy instanceof ShootingEnemy) {
                 ShootingEnemy se = (ShootingEnemy) enemy;
@@ -56,29 +66,29 @@ public class BattleScreen extends Screen {
             }
         }
 
-        // update player projectiles
+        // Update player projectiles
         for (PlayerProjectile projectile : projectiles) {
             projectile.update(currentTimeScale);
         }
 
-        // update enemy projectiles
+        // Update enemy projectiles
         for (EnemyProjectile ep : enemyProjectiles) {
             ep.update(currentTimeScale);
         }
 
-        // update explosions
+        // Update explosions
         for (Explosion explosion : explosions) {
             explosion.update(currentTimeScale);
         }
 
-        // check collisions
+        // Check all collisions
         checkCollisions();
 
-        // delete inactive objects
+        // Remove inactive objects
         deleteInactiveObjects();
         currentWave.deleteInactiveEnemies();
 
-        // check wave completion
+        // Move to the next wave or win the game if all waves are complete
         if (getCurrentWave().isCompleted() && enemyProjectiles.isEmpty()) {
             if (currentWaveIndex < waves.size() - 1) {
                 advanceWave();
@@ -88,39 +98,45 @@ public class BattleScreen extends Screen {
             }
         }
 
+        // Draw all battle objects
         draw();
     }
 
-
     @Override
     public void draw() {
+        // Draw player
         player.draw();
 
+        // Draw current wave enemies and powerups
         getCurrentWave().draw();
 
+        // Draw player projectiles
         for (PlayerProjectile projectile : projectiles) {
             projectile.draw();
         }
 
+        // Draw enemy projectiles
         for (EnemyProjectile ep : enemyProjectiles) {
             ep.draw();
         }
 
+        // Draw explosions
         for (Explosion explosion : explosions) {
             explosion.draw();
         }
 
+        // Draw UI information
         lives = player.getLives();
         ShadowAliens.getUI().draw(lives, getCurrentWave().getWaveNumber(), score);
     }
 
     public void initialiseObjects() {
-        // initialize lists
+        // Create empty object lists
         projectiles = new ArrayList<>();
         enemyProjectiles = new ArrayList<>();
         explosions = new ArrayList<>();   // 加在这里
 
-        // initialize player
+        // Load player settings from game properties
         Image playerImage = new Image(gameProps.getProperty("player.image"));
         double playerX = ShadowAliens.getScreenWidth() / 2;
         double playerY = Double.parseDouble(gameProps.getProperty("player.posY"));
@@ -131,9 +147,11 @@ public class BattleScreen extends Screen {
         Image projectileImage = new Image(gameProps.getProperty("projectile.image"));
         double projectileSpeed = Double.parseDouble(gameProps.getProperty("projectile.movementSpeed"));
         Image invincibilityImage = new Image(gameProps.getProperty("invincibility.image"));
+
+        // Create player
         player = new Player(playerX, playerY, playerImage, playerSpeed, initialLives, shootCooldown, hitInvincibilityTime, projectileImage, projectileSpeed, invincibilityImage);
 
-        //initialize powerups and enemies along waves
+        // Load all waves from game  properties
         waves = new ArrayList<>();
         int w = 1;
         while (gameProps.getProperty(String.format("wave.%d.enemy.0.type", w)) != null
@@ -141,19 +159,21 @@ public class BattleScreen extends Screen {
             waves.add(new Wave(gameProps, w));
             w++;
         }
-
     }
 
     public void checkCollisions() {
-        // check if player collides with enemies
+        // Check collision between player and enemies
         for (Enemy enemy : getCurrentWave().getEnemies()) {
             if (enemy.isActive() && enemy.hasArrived(getCurrentWave().getFrameCount())) {
                 if (enemy.collidesWith(player)) {
                     enemy.deactive();
-                    // large Explosion
+
+                    // Create a large explosion at the enemy position
                     Image largeExplosionImage = new Image(gameProps.getProperty("explosion.large.image"));
                     int largeDuration = Integer.parseInt(gameProps.getProperty("explosion.large.duration"));
                     explosions.add(new Explosion(enemy.getX(), enemy.getY(), largeExplosionImage, largeDuration));
+
+                    // Player loses one life if not invincible
                     if (!player.isInvincible()) {
                         player.loseLife();
                         score = Math.max(0, score - Integer.parseInt(gameProps.getProperty("score.gotHit")));
@@ -161,14 +181,16 @@ public class BattleScreen extends Screen {
                 }
             }
         }
-        // check if enemies collide with projectiles
+
+        // Check collision between player projectiles and enemies
         for (Enemy enemy : getCurrentWave().getEnemies()) {
             for (PlayerProjectile projectile : projectiles) {
                 if (enemy.isActive() && enemy.hasArrived(getCurrentWave().getFrameCount())) {
                     if (enemy.collidesWith(projectile)) {
                         enemy.deactive();
                         projectile.deactive();
-                        //Add points based on the type of enemy:
+
+                        // Add score based on enemy type
                         switch (enemy) {
                             case RegularEnemy regularEnemy ->
                                     score += Integer.parseInt(gameProps.getProperty("score.destroyedEnemy.regular"));
@@ -179,6 +201,8 @@ public class BattleScreen extends Screen {
                             default -> {
                             }
                         }
+
+                        // Create a large explosion at the enemy position
                         Image explosionImage = new Image(gameProps.getProperty("explosion.large.image"));
                         int explosionDuration = Integer.parseInt(gameProps.getProperty("explosion.large.duration"));
                         Explosion explosion = new Explosion(enemy.getX(), enemy.getY(), explosionImage, explosionDuration);
@@ -188,13 +212,17 @@ public class BattleScreen extends Screen {
             }
         }
 
-        // check if enemyProjectile hit player
+        // Check collision between enemy projectiles and player
         for (EnemyProjectile ep : enemyProjectiles) {
             if (ep.isActive() && player.collidesWith(ep)) {
                 ep.deactive();
+
+                // Create a small explosion at the projectile position
                 Image smallExplosionImage = new Image(gameProps.getProperty("explosion.small.image"));
                 int smallDuration = Integer.parseInt(gameProps.getProperty("explosion.small.duration"));
                 explosions.add(new Explosion(ep.getX(), ep.getY(), smallExplosionImage, smallDuration));
+
+                // Player loses one life if not invincible
                 if (!player.isInvincible()) {
                     player.loseLife();
                     score = Math.max(0, score - Integer.parseInt(gameProps.getProperty("score.gotHit")));
@@ -202,13 +230,17 @@ public class BattleScreen extends Screen {
             }
         }
 
-        // check if enemyProjectile hit playerProjectile
+        // Check collision between player projectiles and enemy projectiles
         for (PlayerProjectile pp : projectiles) {
             for (EnemyProjectile ep : enemyProjectiles) {
                 if (pp.isActive() && ep.isActive() && pp.collidesWith(ep)) {
                     pp.deactive();
                     ep.deactive();
+
+                    // Add score for destroying an enemy projectile
                     score += Integer.parseInt(gameProps.getProperty("score.hitProjectile"));
+
+                    // Create a small explosion at the collision position
                     Image smallExplosionImage = new Image(gameProps.getProperty("explosion.small.image"));
                     int smallDuration = Integer.parseInt(gameProps.getProperty("explosion.small.duration"));
                     explosions.add(new Explosion(ep.getX(), ep.getY(), smallExplosionImage, smallDuration));
@@ -216,6 +248,7 @@ public class BattleScreen extends Screen {
             }
         }
 
+        // Check collision between player and powerups
         for (Powerup powerup : getCurrentWave().getPowerups()) {
             if (powerup.isActive() && player.collidesWith(powerup)) {
                 powerup.apply(player);
@@ -226,8 +259,9 @@ public class BattleScreen extends Screen {
     }
 
     public void deleteInactiveObjects() {
-        //the deletion for enemy and powerups are handled in wave class
+        // Enemy and powerup deletion is handled in the Wave class
 
+        // Remove inactive enemy projectiles
         for (int i = 0; i < enemyProjectiles.size(); i++) {
             if (!enemyProjectiles.get(i).isActive()) {
                 enemyProjectiles.remove(i);
@@ -235,6 +269,7 @@ public class BattleScreen extends Screen {
             }
         }
 
+        // Remove inactive player projectiles
         for (int i = 0; i < projectiles.size(); i++) {
             if (!projectiles.get(i).isActive()) {
                 projectiles.remove(i);
@@ -242,6 +277,7 @@ public class BattleScreen extends Screen {
             }
         }
 
+        // Remove inactive explosions
         for (int i = 0; i < explosions.size(); i++) {
             if (!explosions.get(i).isActive()) {
                 explosions.remove(i);
@@ -251,14 +287,16 @@ public class BattleScreen extends Screen {
     }
 
     public void speedUp() {
+        // Increase game speed level
         speedLevel++;
     }
 
     public void speedDown() {
+        // Decrease game speed level
         speedLevel--;
     }
 
-    // calculate the timeScale based on speedLevel
+    // Calculate the time scale based on the current speed level
     public double calTimeScale() {
         if (speedLevel > 0) {
             return speedLevel + 1;
@@ -270,32 +308,38 @@ public class BattleScreen extends Screen {
     }
 
     public void switchInv() {
+        // Toggle developer invincibility mode
         InvMode = !InvMode;
         player.setDevInvincible(InvMode);
     }
 
     public void advanceWave() {
+        // Add wave completion score and move to the next wave
         score += Integer.parseInt(gameProps.getProperty("score.waveCompleted"));
         currentWaveIndex++;
+
+        // Clear projectiles when entering a new wave
         projectiles.clear();
         enemyProjectiles.clear();
     }
 
     private Wave getCurrentWave() {
+        // Return the wave currently being played
         return waves.get(currentWaveIndex);
     }
 
     public void skipWave() {
         Wave currentWave = waves.get(currentWaveIndex);
-        // clear all gameObjects, no explosion and no points of Objects rewarded
+
+        // Clear all current wave objects without giving object scores
         currentWave.clearObjects();
         enemyProjectiles.clear();
         projectiles.clear();
 
-        // wave points rewarded
+        // Add wave completion score
         score += Integer.parseInt(gameProps.getProperty("score.waveCompleted"));
 
-        // identify if it's last wave
+        // Move to the next wave, or win if this is the final wave
         if (currentWaveIndex < waves.size() - 1) {
             currentWaveIndex++;
         } else {
@@ -304,10 +348,12 @@ public class BattleScreen extends Screen {
     }
 
     public boolean isGameOver() {
+        // Game is over when the player has no lives left
         return player.getLives() <= 0;
     }
 
     public boolean isGameWon() {
+        // Game is won after all waves are completed
         return gameWon;
     }
 }

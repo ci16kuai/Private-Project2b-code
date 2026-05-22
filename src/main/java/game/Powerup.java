@@ -21,12 +21,14 @@ public abstract class Powerup extends GameObject implements Moveable {
     }
 
     public void update(double frameCount, double timeScale) {
+        // Powerups only start moving after their arrival time.
         if (!hasArrived(frameCount)) {
             return;
         }
 
         move(timeScale);
 
+        // Remove the powerup after it leaves the screen.
         if (y >= ShadowAliens.getScreenHeight() + image.getHeight() / 2) {
             deactive();
         }

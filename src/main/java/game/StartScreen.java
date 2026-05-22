@@ -23,7 +23,7 @@ public class StartScreen extends Screen {
     public StartScreen(Properties gameProps) {
         super(gameProps);
 
-        // load player (can move left/right, cannot shoot)
+        // Create a player for display and movement on the start screen.
         Image playerImage = new Image(gameProps.getProperty("player.image"));
         double playerX = ShadowAliens.getScreenWidth() / 2;
         double playerY = Double.parseDouble(gameProps.getProperty("player.posY"));
@@ -36,7 +36,7 @@ public class StartScreen extends Screen {
         Image invincibilityImage = new Image(gameProps.getProperty("invincibility.image"));
         player = new Player(playerX, playerY, playerImage, playerSpeed, initialLives, shootCooldown, hitInvincibilityTime, projectileImage, projectileSpeed, invincibilityImage);
 
-        // load text settings
+        // Load title and instruction text settings.
         String fontPath = gameProps.getProperty("text.font");
         int defaultSize = Integer.parseInt(gameProps.getProperty("text.size"));
         int titleSize = Integer.parseInt(gameProps.getProperty("start.title.size"));
@@ -52,7 +52,7 @@ public class StartScreen extends Screen {
         instructionsList = new ArrayList<>(Arrays.asList(
                 gameProps.getProperty("start.instructionsList.text").split(",")));
 
-        // text colour
+        // Load text colour.
         String[] colours = gameProps.getProperty("text.colour").split(",");
         textColour = new DrawOptions().setBlendColour(
                 Double.parseDouble(colours[0]),

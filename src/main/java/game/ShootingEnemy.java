@@ -24,9 +24,12 @@ public class ShootingEnemy extends Enemy implements Shootable {
         if (!hasArrived(frameCount)) {
             return;
         }
+
         y += speed * timeScale;
+
+        // Keep firing cooldown consistent with the current game speed.
         updateCooldown(timeScale);
-        // if enemy is outside screen, deactivate
+
         if (y >= ShadowAliens.getScreenHeight() + image.getHeight() / 2) {
             deactive();
         }
@@ -48,5 +51,4 @@ public class ShootingEnemy extends Enemy implements Shootable {
         cooldownLeft = firingRate;
         return new EnemyProjectile(x, y + image.getHeight() / 2, projectileImage, projectileSpeed);
     }
-
 }

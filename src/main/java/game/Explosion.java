@@ -14,6 +14,7 @@ public class Explosion extends GameObject {
     }
 
     public void update(double timeScale) {
+        // Count down the explosion duration and remove it when finished.
         timer = timer - (1 * timeScale);
         if (timer <= 0) {
             deactive();

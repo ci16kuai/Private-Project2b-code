@@ -40,8 +40,8 @@ public abstract class GameObject {
         active = false;
     }
 
-    // identify whether one object collides with another (AI generated)
     public boolean collidesWith(GameObject other) {
+        // Check collision using the rectangular bounds of both images.
         double dx = Math.abs(this.x - other.x);
         double dy = Math.abs(this.y - other.y);
 

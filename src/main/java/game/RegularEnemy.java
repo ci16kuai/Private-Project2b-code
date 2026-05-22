@@ -1,6 +1,5 @@
 package game;
 
-import bagel.DrawOptions;
 import bagel.Image;
 
 public class RegularEnemy extends Enemy {

@@ -49,12 +49,14 @@ public class Player extends GameObject implements Shootable {
     }
 
     public void movement(Input input, double timeScale) {
+        //move left
         if ((input.wasPressed(Keys.A) || input.isDown(Keys.A))) {
             x -= currentSpeed * timeScale;
             if (x < image.getWidth() / 2) {
                 x = image.getWidth() / 2;
             }
         }
+        //move right
         if ((input.wasPressed(Keys.D) || input.isDown(Keys.D))) {
             x += currentSpeed * timeScale;
             if (x >= ShadowAliens.getScreenWidth() - image.getWidth() / 2 - 1) {
@@ -85,6 +87,8 @@ public class Player extends GameObject implements Shootable {
     public void activatePowerup(String type, int duration) {
         this.activePowerup = type;
         this.powerupDurationLeft = duration;
+
+        // Apply temporary powerup effects.
         if (type.equals("engine")) {
             currentSpeed = baseSpeed * 2;
         } else if (type.equals("cooldown")) {
@@ -96,7 +100,7 @@ public class Player extends GameObject implements Shootable {
         if (powerupDurationLeft > 0) {
             powerupDurationLeft -= timeScale;
             if (powerupDurationLeft <= 0) {
-                // 恢复 powerup 效果
+                // Restore player stats when the powerup expires.
                 if (activePowerup.equals("engine")) {
                     currentSpeed = baseSpeed;
                 } else if (activePowerup.equals("cooldown")) {
@@ -105,6 +109,7 @@ public class Player extends GameObject implements Shootable {
                 activePowerup = "";
             }
         }
+
         if (hitInvincibilityLeft > 0) {
             hitInvincibilityLeft -= timeScale;
         }
@@ -113,6 +118,8 @@ public class Player extends GameObject implements Shootable {
     @Override
     public void draw() {
         super.draw();
+
+        // Draw the invincibility effect on top of the player.
         if (isInvincible()) {
             invincibilityImage.draw(x, y);
         }
@@ -126,6 +133,8 @@ public class Player extends GameObject implements Shootable {
 
     public void loseLife() {
         lives -= 1;
+
+        // Give the player brief invincibility after taking damage.
         hitInvincibilityLeft = hitInvincibilityTime;
     }
 

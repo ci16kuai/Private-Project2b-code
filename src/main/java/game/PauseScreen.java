@@ -20,6 +20,7 @@ public class PauseScreen extends Screen {
 
     @Override
     public void draw() {
+        // Draw the current battle state behind the pause UI.
         battleScreen.draw();
         ShadowAliens.getUI().drawPause(battleScreen.calTimeScale());
     }

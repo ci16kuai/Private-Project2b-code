@@ -79,7 +79,8 @@ public class Wave {
     }
 
     public void update(double timeScale) {
-        frameCount+=timeScale;
+        // Advance this wave's timer using the current game speed.
+        frameCount += timeScale;
 
         for (Enemy enemy : enemies) {
             enemy.update(frameCount, timeScale);
@@ -91,6 +92,7 @@ public class Wave {
     }
 
     public void draw() {
+        // Only draw objects after their arrival time.
         for (Enemy enemy : enemies) {
             if (enemy.hasArrived(frameCount)) {
                 enemy.draw();

@@ -1,19 +1,20 @@
 package game;
 
-import bagel.DrawOptions;
 import bagel.Image;
 
 public class StrafingEnemy extends Enemy {
 
-    private int horizontalDirection; // 1 = right, -1 = left
+    // Direction of horizontal movement: 1 = right, -1 = left
+    private int horizontalDirection;
 
     public StrafingEnemy(double x, double y, Image image, int speed, int arrivalTime) {
         super(x, y, image, speed, arrivalTime);
-        // start moving toward nearest edge
+
+        // Start moving toward the nearest side of the screen.
         if (x < ShadowAliens.getScreenWidth() / 2) {
-            horizontalDirection = -1; // closer to left edge, move left
+            horizontalDirection = -1;
         } else {
-            horizontalDirection = 1;  // closer to right edge, move right
+            horizontalDirection = 1;
         }
     }
 
@@ -22,13 +23,11 @@ public class StrafingEnemy extends Enemy {
         if (!hasArrived(frameCount)) {
             return;
         }
-        // move down
-        y += speed * timeScale;
 
-        // move horizontally
+        y += speed * timeScale;
         x += speed * horizontalDirection * timeScale;
 
-        // bounce off edges (no pixel off screen)
+        // Reverse direction when reaching a screen edge.
         if (x <= image.getWidth() / 2) {
             x = image.getWidth() / 2;
             horizontalDirection = 1;
